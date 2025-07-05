@@ -146,8 +146,8 @@ To use MeloDestra, you will need API keys from Spotify. For enhanced features li
     -   In your app settings on the Spotify Developer Dashboard, click on "Edit Settings".
     -   In the "Redirect URIs" section, add the following URI: `http://127.0.0.1:5000/callback`
 
-    > [!IMPORTANT]
-    > This exact URI is hardcoded in the application for the authentication callback. Ensure it matches precisely. Even if you change the host port mapping in Docker (e.g., `5010:5000`), the redirect URI registered with Spotify *must* be `http://127.0.0.1:5000/callback` because that's what the application tells Spotify to use internally.
+> [!IMPORTANT]
+> This exact URI is hardcoded in the application for the authentication callback. Ensure it matches precisely. Even if you change the host port mapping in Docker (e.g., `5010:5000`), the redirect URI registered with Spotify *must* be `http://127.0.0.1:5000/callback` because that's what the application tells Spotify to use internally.
     
     -   Click "Save" at the bottom of the settings page.
 
@@ -217,21 +217,21 @@ To use MeloDestra, you will need API keys from Spotify. For enhanced features li
 - **Adaptive Contrast:** Text colour dynamically switches between black/white based on background luminance, with specific handling for mid-gray backgrounds to ensure readability.
 - **External Artwork:** Use iTunes API to overcome Spotify's artwork resolution limits (640x640). 
 
-    > [!TIP]
-    > iTunes has been great because it's free, generous API without auth and the artwork is great quality (1200x1200). This was a ***noticeable*** difference in quality.
+> [!TIP]
+> iTunes has been great because it's free, generous API without auth and the artwork is great quality (1200x1200). This was a ***noticeable*** difference in quality.
 
 - **Proxy for CORS:** Implemented a backend proxy to allow client-side colour analysis of images hosted on different domains.
 - **Polling & Caching:** 
     - Use periodic polling (frontend) for updates, with backend caching for external artwork lookups to reduce API calls. 
 
-        > [!NOTE]
-        > This could probably be improved a lot with WebSockets but I can't be bothered.
+> [!NOTE]
+> This could probably be improved a lot with WebSockets but I can't be bothered.
 
     - Like status/shuffle state is updated via a poll and this doesn't seem to be an issue with rate limiting.
 - **Genre Source:** Switched primarily to Last.fm (if enabled and configured) for fetching artist genres/tags instead of Spotify's API to further reduce calls to Spotify and prevent potential rate limiting issues. 
 
-    > [!WARNING]
-    > When I was using Spotify's API for genre fetching, I was getting 429 errors all the time, multiple times being banned for over 24 hours.
+> [!WARNING]
+> When I was using Spotify's API for genre fetching, I was getting 429 errors all the time, multiple times being banned for over 24 hours.
 
 - **/toggle-like:** A `/toggle-like` endpoint was implemented which accepts a POST request with an empty body and returns a JSON response with the new liked status. This is used to update the liked status when the frame is knocked using [PulsDestra](https://github.com/monstermuffin/PulsDestra).
 
