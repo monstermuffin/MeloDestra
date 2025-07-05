@@ -308,14 +308,11 @@ def callback():
         return "Error: No authorization code received", 400
     
     try:
-        # Get access token using the authorization code
-        token_info = sp_oauth.get_access_token(code, check_cache=False)
-        print(f"Successfully obtained access token for remote setup")
+        # Get access token using the authorisation code and save it to cache
+        token_info = sp_oauth.get_access_token(code)
+        print(f"Successfully obtained and cached access token - redirecting to app")
         
-        if USE_REMOTE_SETUP_MODE:
-            return render_template('device_success.html')
-        else:
-            return redirect(url_for('index', _external=True))
+        return redirect(url_for('index', _external=True))
     except Exception as e:
         print(f"Error during authentication: {e}")
         return f"Authentication failed: {e}", 400
@@ -327,10 +324,6 @@ def device_auth():
     
     auth_url = sp_oauth.get_authorize_url()
     return redirect(auth_url)
-
-@app.route('/device-success')
-def device_success():
-    return render_template('device_success.html')
 
 def get_itunes_artwork(artist_name, album_name):    
     simplified_album_name = re.sub(r"\s*\(.*\)\s*", "", album_name).strip()

@@ -101,40 +101,28 @@
         </div>
 
         <div class="setup-steps">
-            <h2>📱 Setup Instructions</h2>
+            <h2>🚀 Quick Setup</h2>
             
             <div class="step">
                 <div class="step-number">Step 1:</div>
-                Make sure your Spotify app has this redirect URI configured:<br>
-                <div class="code-block">http://127.0.0.1:8888/callback</div>
-                <small>If you haven't configured this yet, go to <a href="https://developer.spotify.com/dashboard" target="_blank" style="color: #1db954;">Spotify Developer Dashboard</a> → Your App → Edit Settings → Redirect URIs → Add URI</small>
-            </div>
-
-            <div class="step">
-                <div class="step-number">Step 2:</div>
-                <strong>⚠️ Important:</strong> When you click the button below, you'll authorise with Spotify and then see an error page. <strong>This error is expected.</strong> You'll need to copy the URL from that error page and come back to this tab.
+                <strong>⚠️ Important:</strong> When you click authorise, you'll see an error page after logging in. <strong>This is normal!</strong> Just copy the URL from that error page.
                 <br><br>
                 <a href="/device-auth" class="auth-button" target="_blank">🎧 authorise with Spotify</a>
             </div>
 
             <div class="step">
-                <div class="step-number">Step 3:</div>
-                In the new tab that opens, you'll be redirected to Spotify to log in and authorise MeloDestra. Grant the requested permissions.
-            </div>
-
-            <div class="step">
-                <div class="step-number">Step 4:</div>
-                After authorisation, Spotify will redirect to <code>127.0.0.1:8888</code> which will show an error page like "This site can't be reached" or "Connection refused". <strong>This is expected.</strong>
-            </div>
-
-            <div class="step">
-                <div class="step-number">Step 5:</div>
-                From the error page's address bar, copy the entire URL (it should start with <code>http://127.0.0.1:8888/callback?code=</code>) then come back to this tab and paste it below:
+                <div class="step-number">Step 2:</div>
+                After authorising, copy the full URL from the error page (starts with <code>http://127.0.0.1:8888/callback?code=</code>) and paste it here:
                 <br><br>
                 <input type="text" id="callbackUrl" placeholder="http://127.0.0.1:8888/callback?code=YOUR_CODE_HERE" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: white; margin-bottom: 10px;">
                 <br>
                 <button onclick="processCallback()" class="auth-button">✅ Complete Setup</button>
             </div>
+        </div>
+
+        <div class="warning">
+            <strong>First time?</strong> Make sure your Spotify app has this redirect URI: <code>http://127.0.0.1:8888/callback</code><br>
+            <small>Configure it at <a href="https://developer.spotify.com/dashboard" target="_blank" style="color: #1db954;">Spotify Developer Dashboard</a> → Your App → Edit Settings → Redirect URIs</small>
         </div>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #444; font-size: 0.9em; color: #999;">
