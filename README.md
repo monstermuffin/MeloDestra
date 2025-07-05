@@ -144,11 +144,7 @@ To use MeloDestra, you will need API keys from Spotify. For enhanced features li
     -   You will need both of these for the `MD_SPOTIPY_CLIENT_ID` and `MD_SPOTIPY_CLIENT_SECRET` configuration values.
 4.  **Set the Redirect URI:**
     -   In your app settings on the Spotify Developer Dashboard, click on "Edit Settings".
-    -   In the "Redirect URIs" section, add the following URI: `http://127.0.0.1:5000/callback`
-
-> [!IMPORTANT]
-> This exact URI is hardcoded in the application for the authentication callback. Ensure it matches precisely. Even if you change the host port mapping in Docker (e.g., `5010:5000`), the redirect URI registered with Spotify *must* be `http://127.0.0.1:5000/callback` because that's what the application tells Spotify to use internally.
-    
+    -   In the "Redirect URIs" section, add: `http://127.0.0.1:8888/callback`
     -   Click "Save" at the bottom of the settings page.
 
 ### Last.fm API Keys (Optional)
@@ -161,6 +157,28 @@ To use MeloDestra, you will need API keys from Spotify. For enhanced features li
     -   Once your API account is created, you will be provided with an **API Key** and a **Shared Secret**.
     -   You will need these for the `MD_LASTFM_API_KEY` and `MD_LASTFM_SHARED_SECRET` configuration values.
     -   You will also need your **Last.fm username** for the `MD_LASTFM_USERNAME` setting if you want to display play counts.
+
+## Remote Deployment
+
+MeloDestra includes **Remote Setup Mode** which makes remote deployment work with less headaches.
+
+When you deploy MeloDestra on a remote server, traditional OAuth callbacks fail because Spotify tries to redirect to localhost, which won't work. Remote Setup Mode works around this by using the "failed" localhost redirect as part of the authentication flow, you simply copy the callback URL and paste it back to complete authentication.
+
+If you are planning to use MeloDestra on the machine on which you will authorise Spotify on directly, then this is not needed as loalhost is indeed your local host.
+
+When you load MeloDestra on a remote server for the first time, you will be redirected to a setup page where you will be asked to login to Spotify, after doing so you will be met with an error page, which is expected.
+
+You will need to copy the callback URL and paste it back into MeloDestra to complete the setup.
+
+If you need to disable Remote Setup Mode for some reason:
+```yaml
+environment:
+  MD_USE_REMOTE_SETUP_MODE: 'false'
+  MD_SPOTIPY_REDIRECT_URI: 'http://your-server:5010/callback'
+```
+
+> [!NOTE]
+> Remote Setup Mode is enabled by default.
 
 ## Configuration Details
 
@@ -176,6 +194,8 @@ To use MeloDestra, you will need API keys from Spotify. For enhanced features li
 |------------------------------|-------------------------|---------------------------------|
 | `MD_SPOTIPY_CLIENT_ID`       | `SPOTIPY_CLIENT_ID`     | Your Spotify Application Client ID. |
 | `MD_SPOTIPY_CLIENT_SECRET`   | `SPOTIPY_CLIENT_SECRET` | Your Spotify Application Client Secret. |
+| `MD_USE_REMOTE_SETUP_MODE`   | `USE_REMOTE_SETUP_MODE` | Enable guided remote setup. Default: `true` (recommended) |
+| `MD_SPOTIPY_REDIRECT_URI`    | `SPOTIPY_REDIRECT_URI`  | OAuth callback URI. Only needed if remote setup mode disabled. |
 
 **Optional Settings (with defaults):**
 

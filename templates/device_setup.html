@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeloDestra - Remote Setup</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1db954, #191414);
+            color: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 600px;
+            background: rgba(25, 20, 20, 0.9);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        h1 {
+            color: #1db954;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #1db954;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .setup-steps {
+            text-align: left;
+            margin: 30px 0;
+        }
+        .step {
+            background: rgba(29, 185, 84, 0.1);
+            border-left: 4px solid #1db954;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .step-number {
+            color: #1db954;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .auth-button {
+            background: #1db954;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px 0;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+        .auth-button:hover {
+            background: #1ed760;
+        }
+        .warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #ffc107;
+        }
+        .code-block {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            color: #1db954;
+        }
+        .icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🎵</div>
+        <h1>MeloDestra Remote Setup</h1>
+        <p>Welcome! Your MeloDestra is running in <strong>Remote Setup Mode</strong> to make remote authentication easier.</p>
+        
+        <div class="warning">
+            <strong>⚠️ Important:</strong> This setup only needs to be done once. After authentication, MeloDestra will remember your Spotify account.
+        </div>
+
+        <div class="setup-steps">
+            <h2>📱 Setup Instructions</h2>
+            
+            <div class="step">
+                <div class="step-number">Step 1:</div>
+                Make sure your Spotify app has this redirect URI configured:<br>
+                <div class="code-block">http://127.0.0.1:8888/callback</div>
+                <small>If you haven't configured this yet, go to <a href="https://developer.spotify.com/dashboard" target="_blank" style="color: #1db954;">Spotify Developer Dashboard</a> → Your App → Edit Settings → Redirect URIs → Add URI</small>
+            </div>
+
+            <div class="step">
+                <div class="step-number">Step 2:</div>
+                Click the button below to start authentication:
+                <br><br>
+                <a href="/device-auth" class="auth-button">🎧 Authorize with Spotify</a>
+            </div>
+
+            <div class="step">
+                <div class="step-number">Step 3:</div>
+                You'll be redirected to Spotify to log in and authorize MeloDestra. Grant the requested permissions.
+            </div>
+
+            <div class="step">
+                <div class="step-number">Step 4:</div>
+                After authorization, Spotify will try to redirect to <code>127.0.0.1:8888</code>. This will likely show an error page - <strong>that's normal!</strong>
+            </div>
+
+            <div class="step">
+                <div class="step-number">Step 5:</div>
+                Copy the entire URL from your browser's address bar (it will contain the authorization code) and paste it below:
+                <br><br>
+                <input type="text" id="callbackUrl" placeholder="Paste the full callback URL here..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: white; margin-bottom: 10px;">
+                <br>
+                <button onclick="processCallback()" class="auth-button">✅ Complete Setup</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #444; font-size: 0.9em; color: #999;">
+            <p><strong>Alternative:</strong> If you prefer the standard redirect URI method, you can disable remote setup mode by setting <code>MD_USE_REMOTE_SETUP_MODE=false</code> and configuring <code>MD_SPOTIPY_REDIRECT_URI</code> to point to your server.</p>
+        </div>
+    </div>
+
+    <script>
+        function processCallback() {
+            const url = document.getElementById('callbackUrl').value.trim();
+            if (!url) {
+                alert('Please paste the callback URL first.');
+                return;
+            }
+            
+            // Extract the code parameter from the URL
+            const urlParams = new URLSearchParams(url.split('?')[1] || url.split('#')[1] || '');
+            const code = urlParams.get('code');
+            
+            if (!code) {
+                alert('No authorization code found in the URL. Please make sure you copied the complete URL.');
+                return;
+            }
+            
+            // Redirect to our callback with the code
+            window.location.href = `/callback?code=${encodeURIComponent(code)}`;
+        }
+        
+        // Auto-detect if user is on the callback page and extract the code
+        if (window.location.search.includes('code=') || window.location.hash.includes('code=')) {
+            const urlParams = new URLSearchParams(window.location.search || window.location.hash.substring(1));
+            const code = urlParams.get('code');
+            if (code) {
+                window.location.href = `/callback?code=${encodeURIComponent(code)}`;
+            }
+        }
+    </script>
+</body>
+</html> 

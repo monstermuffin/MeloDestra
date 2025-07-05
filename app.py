@@ -54,6 +54,8 @@ DEFAULT_CONFIG = {
         "lidarr", "seen live", "fip", "favorite", "favs",
         "owned", "wishlist", "library", "collection", "to listen", "buy, Funk_add_to_lidarr_batch_1"
     ],
+    "SPOTIPY_REDIRECT_URI": "http://127.0.0.1:5000/callback", #  must use 127.0.0.1, spotify will reject localhost as mfw 'not secure'
+    "USE_REMOTE_SETUP_MODE": True,
 }
 
 def get_env_var(var_name, default=None, var_type=str):
@@ -134,6 +136,7 @@ def load_and_merge_config():
     config = {
         "SPOTIPY_CLIENT_ID": _get_value("MD_SPOTIPY_CLIENT_ID", "SPOTIPY_CLIENT_ID", DEFAULT_CONFIG["SPOTIPY_CLIENT_ID"], str),
         "SPOTIPY_CLIENT_SECRET": _get_value("MD_SPOTIPY_CLIENT_SECRET", "SPOTIPY_CLIENT_SECRET", DEFAULT_CONFIG["SPOTIPY_CLIENT_SECRET"], str),
+        "SPOTIPY_REDIRECT_URI": _get_value("MD_SPOTIPY_REDIRECT_URI", "SPOTIPY_REDIRECT_URI", DEFAULT_CONFIG["SPOTIPY_REDIRECT_URI"], str),
         "LASTFM_API_KEY": _get_value("MD_LASTFM_API_KEY", "LASTFM_API_KEY", DEFAULT_CONFIG["LASTFM_API_KEY"], str),
         "LASTFM_SHARED_SECRET": _get_value("MD_LASTFM_SHARED_SECRET", "LASTFM_SHARED_SECRET", DEFAULT_CONFIG["LASTFM_SHARED_SECRET"], str),
         "refresh_interval_ms": _get_value("MD_REFRESH_INTERVAL_MS", "refresh_interval_ms", DEFAULT_CONFIG["refresh_interval_ms"], int),
@@ -167,6 +170,7 @@ def load_and_merge_config():
              "username": _get_value("MD_LASTFM_USERNAME", "lastfm.username", DEFAULT_CONFIG["lastfm"]["username"], str, True),
         },
         "genre_blacklist": _get_value("MD_GENRE_BLACKLIST", "genre_blacklist", DEFAULT_CONFIG["genre_blacklist"], list),
+        "USE_REMOTE_SETUP_MODE": _get_value("MD_USE_REMOTE_SETUP_MODE", "USE_REMOTE_SETUP_MODE", DEFAULT_CONFIG["USE_REMOTE_SETUP_MODE"], bool),
     }
     return config
 
@@ -175,7 +179,16 @@ APP_CONFIG = load_and_merge_config()
     # spotify tings
 CLIENT_ID = APP_CONFIG["SPOTIPY_CLIENT_ID"]
 CLIENT_SECRET = APP_CONFIG["SPOTIPY_CLIENT_SECRET"]
-REDIRECT_URI = "http://127.0.0.1:5000/callback" # Hardcoded (must use 127.0.0.1, spotify will reject localhost as mfw 'not secure')
+REDIRECT_URI = APP_CONFIG["SPOTIPY_REDIRECT_URI"]
+USE_REMOTE_SETUP_MODE = APP_CONFIG["USE_REMOTE_SETUP_MODE"]
+
+# Detect deployment type and set redirect URI
+if USE_REMOTE_SETUP_MODE:
+    REDIRECT_URI = "http://127.0.0.1:8888/callback"
+    print("INFO: Remote Setup Mode enabled. Using 127.0.0.1 redirect URI for remote authentication.")
+elif REDIRECT_URI == "http://127.0.0.1:5000/callback":
+    print("INFO: Using local development authentication (127.0.0.1:5000).")
+
 SCOPE = "user-read-currently-playing user-read-playback-state user-library-read user-library-modify" 
 CACHE_PATH = ".spotify_cache"
 
@@ -275,20 +288,46 @@ def get_token():
 def index():
     token_info = get_token()
     if not token_info:
-        
-        auth_url = sp_oauth.get_authorize_url()
-        return redirect(auth_url)
+        if USE_REMOTE_SETUP_MODE:
+            return render_template('device_setup.html', 
+                                 client_id=CLIENT_ID,
+                                 redirect_uri=REDIRECT_URI,
+                                 scope=SCOPE)
+        else:
+            auth_url = sp_oauth.get_authorize_url()
+            return redirect(auth_url)
     
     
     return render_template('index.html', app_config=json.dumps(APP_CONFIG))
 
 @app.route('/callback')
 def callback():
-    
     session.clear()
     code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code, as_dict=False, check_cache=False) 
-    return redirect(url_for('index', _external=True))
+    if not code:
+        return "Error: No authorization code received", 400
+    
+    try:
+        token_info = sp_oauth.get_access_token(code, as_dict=False, check_cache=False)
+        if USE_REMOTE_SETUP_MODE:
+            return render_template('device_success.html')
+        else:
+            return redirect(url_for('index', _external=True))
+    except Exception as e:
+        print(f"Error during authentication: {e}")
+        return f"Authentication failed: {e}", 400
+
+@app.route('/device-auth')
+def device_auth():
+    if not USE_REMOTE_SETUP_MODE:
+        return "Remote setup mode is not enabled", 400
+    
+    auth_url = sp_oauth.get_authorize_url()
+    return redirect(auth_url)
+
+@app.route('/device-success')
+def device_success():
+    return render_template('device_success.html')
 
 def get_itunes_artwork(artist_name, album_name):    
     simplified_album_name = re.sub(r"\s*\(.*\)\s*", "", album_name).strip()
