@@ -170,6 +170,8 @@ When you load MeloDestra on a remote server for the first time, you will be redi
 
 You will need to copy the callback URL and paste it back into MeloDestra to complete the setup.
 
+![](images/remote_auth_flow.gif)
+
 If you need to disable Remote Setup Mode for some reason:
 ```yaml
 environment:
