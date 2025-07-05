@@ -190,7 +190,8 @@ elif REDIRECT_URI == "http://127.0.0.1:5000/callback":
     print("INFO: Using local development authentication (127.0.0.1:5000).")
 
 SCOPE = "user-read-currently-playing user-read-playback-state user-library-read user-library-modify" 
-CACHE_PATH = ".spotify_cache"
+CACHE_PATH = ".spotify_cache/token.cache"
+os.makedirs(os.path.dirname(CACHE_PATH), exist_ok=True)
 
 if not CLIENT_ID or not CLIENT_SECRET:
     print("ERROR: SPOTIPY_CLIENT_ID and SPOTIPY_CLIENT_SECRET must be configured via config.yml or environment variables (MD_SPOTIPY_CLIENT_ID, MD_SPOTIPY_CLIENT_SECRET).")
