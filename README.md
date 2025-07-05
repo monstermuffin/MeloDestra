@@ -112,8 +112,8 @@ This project should ideally be used with [PulsDestra,](https://github.com/monste
               - spotify_cache:/app/.spotify_cache # Recommended for persisting Spotify auth
         ```
 
-    > [!NOTE]
-    > The application is designed so that environment variables take precedence. If you also have a `config.yml` file in the project root when building a local image, settings from environment variables will still override it.
+> [!NOTE]
+> The application is designed so that environment variables take precedence. If you also have a `config.yml` file in the project root when building a local image, settings from environment variables will still override it.
 
 -   **Run with Docker Compose:**
     - 
@@ -227,7 +227,9 @@ To use MeloDestra, you will need API keys from Spotify. For enhanced features li
 > [!NOTE]
 > This could probably be improved a lot with WebSockets but I can't be bothered.
 
-    - Like status/shuffle state is updated via a poll and this doesn't seem to be an issue with rate limiting.
+> [!NOTE]
+> Like status/shuffle state is updated via a poll and this doesn't seem to be an issue with rate limiting.
+
 - **Genre Source:** Switched primarily to Last.fm (if enabled and configured) for fetching artist genres/tags instead of Spotify's API to further reduce calls to Spotify and prevent potential rate limiting issues. 
 
 > [!WARNING]
