@@ -308,7 +308,10 @@ def callback():
         return "Error: No authorization code received", 400
     
     try:
-        token_info = sp_oauth.get_access_token(code, as_dict=False, check_cache=False)
+        # Get access token using the authorization code
+        token_info = sp_oauth.get_access_token(code, check_cache=False)
+        print(f"Successfully obtained access token for remote setup")
+        
         if USE_REMOTE_SETUP_MODE:
             return render_template('device_success.html')
         else:

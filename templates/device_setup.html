@@ -112,26 +112,26 @@
 
             <div class="step">
                 <div class="step-number">Step 2:</div>
-                Click the button below to start authentication:
+                <strong>⚠️ Important:</strong> When you click the button below, you'll authorise with Spotify and then see an error page. <strong>This error is expected.</strong> You'll need to copy the URL from that error page and come back to this tab.
                 <br><br>
-                <a href="/device-auth" class="auth-button">🎧 Authorize with Spotify</a>
+                <a href="/device-auth" class="auth-button" target="_blank">🎧 authorise with Spotify</a>
             </div>
 
             <div class="step">
                 <div class="step-number">Step 3:</div>
-                You'll be redirected to Spotify to log in and authorize MeloDestra. Grant the requested permissions.
+                In the new tab that opens, you'll be redirected to Spotify to log in and authorise MeloDestra. Grant the requested permissions.
             </div>
 
             <div class="step">
                 <div class="step-number">Step 4:</div>
-                After authorization, Spotify will try to redirect to <code>127.0.0.1:8888</code>. This will likely show an error page - <strong>that's normal!</strong>
+                After authorisation, Spotify will redirect to <code>127.0.0.1:8888</code> which will show an error page like "This site can't be reached" or "Connection refused". <strong>This is expected.</strong>
             </div>
 
             <div class="step">
                 <div class="step-number">Step 5:</div>
-                Copy the entire URL from your browser's address bar (it will contain the authorization code) and paste it below:
+                From the error page's address bar, copy the entire URL (it should start with <code>http://127.0.0.1:8888/callback?code=</code>) then come back to this tab and paste it below:
                 <br><br>
-                <input type="text" id="callbackUrl" placeholder="Paste the full callback URL here..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: white; margin-bottom: 10px;">
+                <input type="text" id="callbackUrl" placeholder="http://127.0.0.1:8888/callback?code=YOUR_CODE_HERE" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: white; margin-bottom: 10px;">
                 <br>
                 <button onclick="processCallback()" class="auth-button">✅ Complete Setup</button>
             </div>
