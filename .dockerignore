@@ -1,0 +1,13 @@
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+venv/
+.venv/
+__pycache__/
+.DS_Store
+.spotify_cache
+config.yml
+config.example.yml
+images/

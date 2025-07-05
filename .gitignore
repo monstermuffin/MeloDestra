@@ -1,0 +1,15 @@
+__pycache__/
+.env
+.venv
+venv/
+.vscode/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+config.yml
+.spotify_cache
+docker-compose.test.yml
+*.md
+!README.md

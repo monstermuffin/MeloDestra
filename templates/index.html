@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- Ignoring HTML linter for this file - fuck HTML -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Frame</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="/static/style.css?v=11">
+    
+    <script>
+        window.APP_CONFIG = JSON.parse('{{app_config|safe}}');
+    </script>
+</head>
+<body>
+    <div id="spotify-widget">
+        <div class="artwork-container">
+            <img id="album-artwork" data-src="" alt="Album Artwork" style="display: none;" crossorigin="anonymous">
+            <div id="icon-bar">
+                <span id="shuffle-status-icon" class="playback-icon"></span>
+                <span id="like-status-icon" class="playback-icon"></span>
+                <span id="lastfm-icon-container" class="playback-icon lastfm-icon-info" style="display: none;">
+                    <i class="fa-brands fa-lastfm"></i>
+                    <span id="play-count-number"></span>
+                </span>
+                <span id="first-scrobble-icon" class="playback-icon" style="display: none;">
+                    <i class="fa-brands fa-lastfm"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="track-info">
+            <p id="track-name"></p>
+            <p id="artist-name"></p>
+            <p id="genre-info"></p>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div class="time-info">
+                <span id="current-time">0:00</span>
+                <span id="total-time">0:00</span>
+            </div>
+        </div>
+        <p class="loading-text">Connecting to Spotify...</p>
+        <p class="not-playing" style="display: none;">Nothing playing on Spotify.</p>
+    </div>
+
+    <script src="/static/script.js?v=4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.6.0/color-thief.umd.js"></script>
+</body>
+</html> 

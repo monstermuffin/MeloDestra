@@ -1,0 +1,25 @@
+services:
+  melodestra:
+    image: ghcr.io/monstermuffin/melodestra:latest
+    ports:
+      - "5010:5000"
+    environment:
+      MD_SPOTIPY_CLIENT_ID: 'YOUR_SPOTIFY_CLIENT_ID_HERE'
+      MD_SPOTIPY_CLIENT_SECRET: 'YOUR_SPOTIFY_CLIENT_SECRET_HERE'
+      MD_LASTFM_API_KEY: 'YOUR_LASTFM_API_KEY_HERE'
+      MD_LASTFM_SHARED_SECRET: 'YOUR_LASTFM_SHARED_SECRET_HERE'
+      MD_LASTFM_USERNAME: 'YOUR_LASTFM_USERNAME_HERE'
+      MD_DISPLAY_GENRE: 'true'
+      MD_DISPLAY_LASTFM_PLAYCOUNT: 'true'
+      MD_ANIMATED_BACKGROUND_ENABLED: 'true'
+      MD_REFRESH_INTERVAL_MS: '7000'
+      # MD_DISPLAY_HIDE_CURSOR: 'true' # Uncomment for kiosk mode (hides cursor)
+
+    volumes:
+      # Persist Spotify token cache across container restarts
+      # Creates a named volume or use a host path like ./spotify_cache_data:/app/.spotify_cache
+      - spotify_cache:/app/.spotify_cache 
+    restart: unless-stopped
+
+volumes:
+  spotify_cache:
