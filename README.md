@@ -227,7 +227,9 @@ environment:
 
 > [!NOTE]
 > For boolean environment variables, values like 'true', '1', 't', 'yes', 'y' (case-insensitive) are considered true. For list environment variables, provide a comma-separated string.
-> For `config.yml`, you can use `colour_thief_quality` or `color_thief_quality`. Environment variables prefer the correct spelling (e.g., `MD_COLOUR_THIEF_QUALITY`) but incorrect American spelling (`MD_COLOR_THIEF_QUALITY`) is also supported for simplified English users.
+
+> [!NOTE]
+> For `config.yml` or environment variables, you can use `colour_thief_quality` or `color_thief_quality`. Correct spelling (e.g., `MD_COLOUR_THIEF_QUALITY`) is preferred but simplified English is also supported, (e.g., `MD_COLOR_THIEF_QUALITY`).
 
 ## Key Design Decisions
 - **Web-based Approach:** Chose Flask + HTML/JS because it was the easiest way to get a simple, responsive web app and I am very dumb.
