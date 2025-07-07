@@ -3,9 +3,9 @@ _MeloDestra:_ "Melos" - Greek, melody. "Fenestra" - Latin, window.
 
 My Lain teacher said Latin would in fact come in handy one day, and they're still wrong.
 
-![](images/example_portrait.gif)
+![](images/melo_frame.jpg)
 
-MeloDestra is a simple web app that displays full-screen album artwork and Spotify song details. It is designed to be used on an SBC (Raspberry Pi) in kiosk mode. It has a focus on a visually appealing "art piece" look. 
+MeloDestra is a simple web app that displays full-screen album artwork and Spotify song details. It is designed to be used on an SBC (Raspberry Pi) in kiosk mode. It has a focus on a visually appealing "art piece" look.
 
 MeloDestra is ideal for running on some sort of screen on a wall or something.
 
@@ -19,8 +19,7 @@ This project should ideally be used with [PulsDestra,](https://github.com/monste
 - Use high-resolution artwork where possible (more on this below).
 - Create a visually appealing "art piece" look with dynamic elements.
 
-## Technology Stack
-
+## Stack
 > [!NOTE]
 > Most of the Javascript and ~~a small portion of~~ the CSS was vibe coded because I didn't want to deal with Javascript and CSS. Shoot me.
 
