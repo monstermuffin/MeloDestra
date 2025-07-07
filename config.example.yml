@@ -2,17 +2,17 @@
 # Copy this file to config.yml and adjust the settings as needed.
 
 # NOTE: All settings in this file can be overridden by environment variables 
-# (prefixed with FS_, e.g., FS_SPOTIPY_CLIENT_ID, FS_DISPLAY_GENRE).
+# (prefixed with MD_, e.g., MD_SPOTIPY_CLIENT_ID, MD_DISPLAY_GENRE).
 # Environment variables take precedence over values in this file.
 # See README.md for a full list of environment variables and their default values.
 
 # --- API & Refresh ---
-# Required Spotify Credentials (or set FS_SPOTIPY_CLIENT_ID and FS_SPOTIPY_CLIENT_SECRET env vars)
+# Required Spotify Credentials (or set MD_SPOTIPY_CLIENT_ID and MD_SPOTIPY_CLIENT_SECRET env vars)
 SPOTIPY_CLIENT_ID: 'YOUR_SPOTIFY_CLIENT_ID_HERE'
 SPOTIPY_CLIENT_SECRET: 'YOUR_SPOTIFY_CLIENT_SECRET_HERE'
 
 # Last.fm API Credentials (Optional but recommended - for genre/playcount)
-# (or set FS_LASTFM_API_KEY, FS_LASTFM_SHARED_SECRET env vars)
+# (or set MD_LASTFM_API_KEY, MD_LASTFM_SHARED_SECRET env vars)
 # - If you want to use Last.fm for genre fetching and play counts, fill these in.
 # - If left as placeholders or empty, Last.fm features will be disabled.
 LASTFM_API_KEY: 'YOUR_LASTFM_API_KEY_HERE'
@@ -21,10 +21,10 @@ LASTFM_SHARED_SECRET: 'YOUR_LASTFM_SHARED_SECRET_HERE'
 # Interval (in milliseconds) to poll Spotify for current song status
 refresh_interval_ms: 5000
 
-# --- Visuals & Colors ---
-# ColorThief quality (1=highest, 10=default/faster). Lower values are slower but potentially more accurate.
-# You can use 'color_thief_quality' or 'colour_thief_quality' in your config.yml
-color_thief_quality: 1 # or colour_thief_quality: 1
+# --- Visuals & Colours ---
+# ColourThief quality (1=highest, 10=default/faster). Lower values are slower but potentially more accurate.
+# You can use 'colour_thief_quality' or 'color_thief_quality' in your config.yml
+colour_thief_quality: 1 # or color_thief_quality: 1
 # Luminance thresholds for forcing white text on mid-gray backgrounds
 gray_zone_low: 0.30
 gray_zone_high: 0.65
@@ -33,7 +33,7 @@ gray_zone_high: 0.65
 # Settings for the dynamic gradient background animation
 animated_background:
   enabled: true # Set to false to disable animation and use a static background
-  palette_colors: 5 # Number of colours to extract for the gradient (3-8 recommended)
+  palette_colours: 5 # Number of colours to extract for the gradient (3-8 recommended)
   duration: '45s' # Duration of one animation cycle (CSS time format)
 
 # --- Animations ---

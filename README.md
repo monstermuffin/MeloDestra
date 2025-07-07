@@ -26,7 +26,7 @@ This project should ideally be used with [PulsDestra,](https://github.com/monste
 - **Backend:** Python 3 with Flask web framework.
 - **Spotify Integration:** `spotipy` library.
 - **Frontend:** HTML, CSS, JavaScript.
-- **Dynamic Colors:** `color-thief` library (via CDN in JS) for extracting colours from artwork.
+- **Dynamic Colours:** `color-thief` library (via CDN in JS) for extracting colours from artwork.
 - **High-Res Artwork Source:** iTunes Search API (with fallback to Spotify) (also, yes, that iTunes).
 - **Configuration:** Uses `config.yml` for display/behavior settings. Environment variables can override `config.yml` settings, and have defaults if not set.
 
@@ -201,11 +201,11 @@ environment:
 | `MD_LASTFM_SHARED_SECRET`                   | `LASTFM_SHARED_SECRET`                  | `None`                                | string                 | For Last.fm genre/playcount.                            |
 | `MD_LASTFM_USERNAME`                        | `lastfm.username`                       | `""` (empty string)                   | string                 | Your Last.fm username.                                    |
 | `MD_REFRESH_INTERVAL_MS`                    | `refresh_interval_ms`                   | `5000`                                | int                    | Poll interval for Spotify.                                |
-| `MD_COLOR_THIEF_QUALITY`                    | `color_thief_quality` or `colour_thief_quality` | `1`                                   | int                    | 1=highest, 10=faster.                                     |
+| `MD_COLOUR_THIEF_QUALITY`                   | `colour_thief_quality` or `color_thief_quality` | `1`                                   | int                    | 1=highest, 10=faster.                                     |
 | `MD_GRAY_ZONE_LOW`                          | `gray_zone_low`                         | `0.30`                                | float                  | Luminance threshold for white text.                       |
 | `MD_GRAY_ZONE_HIGH`                         | `gray_zone_high`                        | `0.70`                                | float                  | Luminance threshold for white text.                       |
 | `MD_ANIMATED_BACKGROUND_ENABLED`            | `animated_background.enabled`           | `True`                                | boolean                | Enable/disable background animation.                      |
-| `MD_ANIMATED_BACKGROUND_PALETTE_COLORS`     | `animated_background.palette_colors`    | `5`                                   | int                    | Colours for gradient (3-8).                                |
+| `MD_ANIMATED_BACKGROUND_PALETTE_COLOURS`    | `animated_background.palette_colours`   | `5`                                   | int                    | Colours for gradient (3-8).                                |
 | `MD_ANIMATED_BACKGROUND_DURATION`           | `animated_background.duration`          | `'30s'`                               | string                 | Animation cycle duration (CSS time).                      |
 | `MD_ANIMATION_EASE`                         | `animation_ease`                        | `'cubic-bezier(0.25, 0.1, 0.25, 1.0)'`  | string                 | Global animation ease function.                           |
 | `MD_FADE_DURATION`                          | `fade_duration`                         | `'0.4s'`                              | string                 | Fade duration for track changes.                          |
@@ -227,12 +227,12 @@ environment:
 
 > [!NOTE]
 > For boolean environment variables, values like 'true', '1', 't', 'yes', 'y' (case-insensitive) are considered true. For list environment variables, provide a comma-separated string.
-> For `config.yml`, you can use `colour_thief_quality` instead of `color_thief_quality`. Environment variables like `MD_COLOR_THIEF_QUALITY` will always use "COLOR".
+> For `config.yml`, you can use `colour_thief_quality` or `color_thief_quality`. Environment variables prefer the correct spelling (e.g., `MD_COLOUR_THIEF_QUALITY`) but incorrect American spelling (`MD_COLOR_THIEF_QUALITY`) is also supported for backwards simplified English users.
 
 ## Key Design Decisions
 - **Web-based Approach:** Chose Flask + HTML/JS because it was the easiest way to get a simple, responsive web app and I am very dumb.
 - **Portrait Optimization:** CSS tailored for a vertical screen as per my build in the blog post.
-- **Dynamic Colours:** Color-thief library used to give the frame a dynamic colour palette.
+- **Dynamic Colours:** color-thief library used to give the frame a dynamic colour palette.
 - **Adaptive Contrast:** Text colour dynamically switches between black/white based on background luminance, with specific handling for mid-gray backgrounds to ensure readability.
 - **External Artwork:** Use iTunes API to overcome Spotify's artwork resolution limits (640x640). 
 

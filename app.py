@@ -94,6 +94,11 @@ def load_and_merge_config():
 
     # Helper to get value: env -> yaml -> default
     def _get_value(env_name, yaml_path, default_val, var_type=str, is_nested=False):
+        env_name_british = env_name.replace('COLOR', 'COLOUR').replace('COLORS', 'COLOURS')
+        val = get_env_var(env_name_british, None, var_type)
+        if val is not None:
+            return val
+        
         val = get_env_var(env_name, None, var_type)
         if val is not None:
             return val
@@ -102,6 +107,8 @@ def load_and_merge_config():
         yaml_path_colour = None
         if yaml_path == "color_thief_quality":
             yaml_path_colour = "colour_thief_quality"
+        elif 'palette_colors' in yaml_path:
+            yaml_path_colour = yaml_path.replace('palette_colors', 'palette_colours')
 
         for current_yaml_path in [yaml_path_colour, yaml_path] if yaml_path_colour else [yaml_path]:
             if current_yaml_path is None:
@@ -142,7 +149,7 @@ def load_and_merge_config():
         "LASTFM_API_KEY": _get_value("MD_LASTFM_API_KEY", "LASTFM_API_KEY", DEFAULT_CONFIG["LASTFM_API_KEY"], str),
         "LASTFM_SHARED_SECRET": _get_value("MD_LASTFM_SHARED_SECRET", "LASTFM_SHARED_SECRET", DEFAULT_CONFIG["LASTFM_SHARED_SECRET"], str),
         "refresh_interval_ms": _get_value("MD_REFRESH_INTERVAL_MS", "refresh_interval_ms", DEFAULT_CONFIG["refresh_interval_ms"], int),
-        "color_thief_quality": _get_value("MD_COLOR_THIEF_QUALITY", "color_thief_quality", DEFAULT_CONFIG["color_thief_quality"], int),
+        "color_thief_quality": _get_value("MD_COLOUR_THIEF_QUALITY", "color_thief_quality", DEFAULT_CONFIG["color_thief_quality"], int),
         "gray_zone_low": _get_value("MD_GRAY_ZONE_LOW", "gray_zone_low", DEFAULT_CONFIG["gray_zone_low"], float),
         "gray_zone_high": _get_value("MD_GRAY_ZONE_HIGH", "gray_zone_high", DEFAULT_CONFIG["gray_zone_high"], float),
         "animation_ease": _get_value("MD_ANIMATION_EASE", "animation_ease", DEFAULT_CONFIG["animation_ease"], str),
@@ -151,7 +158,7 @@ def load_and_merge_config():
         
         "animated_background": {
             "enabled": _get_value("MD_ANIMATED_BACKGROUND_ENABLED", "animated_background.enabled", DEFAULT_CONFIG["animated_background"]["enabled"], bool, True),
-            "palette_colors": _get_value("MD_ANIMATED_BACKGROUND_PALETTE_COLORS", "animated_background.palette_colors", DEFAULT_CONFIG["animated_background"]["palette_colors"], int, True),
+            "palette_colors": _get_value("MD_ANIMATED_BACKGROUND_PALETTE_COLOURS", "animated_background.palette_colors", DEFAULT_CONFIG["animated_background"]["palette_colors"], int, True),
             "duration": _get_value("MD_ANIMATED_BACKGROUND_DURATION", "animated_background.duration", DEFAULT_CONFIG["animated_background"]["duration"], str, True),
         },
         "ken_burns": {
