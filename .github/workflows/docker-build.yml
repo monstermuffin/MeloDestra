@@ -4,8 +4,28 @@ on:
   workflow_dispatch:
   push:
     branches: [ main, dev ]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - 'docker-compose.yml'
+      - 'config.example.yml'
+      - '.gitignore'
+      - 'images/**'
+      - '**.gif'
+      - '**.jpg'
+      - '**.png'
   pull_request:
     branches: [ main, dev ]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - 'docker-compose.yml'
+      - 'config.example.yml'
+      - '.gitignore'
+      - 'images/**'
+      - '**.gif'
+      - '**.jpg'
+      - '**.png'
 
 env:
   REGISTRY: ghcr.io
