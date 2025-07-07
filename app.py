@@ -10,7 +10,8 @@ from urllib.parse import urlparse, unquote
 import yaml 
 import json 
 import pylast 
-import time 
+import time
+import logging 
 
 app = Flask(__name__)
 app.secret_key = os.urandom(64) 
@@ -742,4 +743,8 @@ if __name__ == '__main__':
     # TODO: Use proper logging instead of print statements
     host = "0.0.0.0"
     port = 5010
+    
+    if not DEBUG_MODE:
+        logging.getLogger('werkzeug').setLevel(logging.ERROR)
+    
     app.run(host=host, port=port, debug=DEBUG_MODE) 
