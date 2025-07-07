@@ -19,6 +19,9 @@ This project should ideally be used with [PulsDestra,](https://github.com/monste
 - Use high-resolution artwork where possible (more on this below).
 - Create a visually appealing "art piece" look with dynamic elements.
 
+MeloDestra's design is responsive and looks good on all screen sizes and orientations.
+![](images/melo_resize.gif)
+
 ## Stack
 > [!NOTE]
 > Most of the Javascript and ~~a small portion of~~ the CSS was vibe coded because I didn't want to deal with Javascript and CSS. Shoot me.
