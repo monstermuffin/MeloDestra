@@ -260,9 +260,8 @@ environment:
 
 ## Next Steps / TODO:
 - Implement deployment scripts/instructions for Raspberry Pi (kiosk mode browser setup).
-- Dockerize the application for easier deployment.
-- Improve error handling and user feedback (e.g., for expired tokens, API errors).
+~~- Dockerize the application for easier deployment.~~
 - **Multi-User Support:** Investigate options for displaying playback state from multiple Spotify accounts (e.g., prioritizing a main account).
 - **Additional Info:** Option to display album release year, explicit tag.
 - Explore alternative/additional artwork sources (MusicBrainz, Fanart.tv).
-- Consider WebSockets instead of polling for real-time updates (more complex). 
+- Consider WebSockets instead of polling for real-time updates. 
