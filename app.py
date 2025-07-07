@@ -56,6 +56,7 @@ DEFAULT_CONFIG = {
     ],
     "SPOTIPY_REDIRECT_URI": "http://127.0.0.1:5010/callback", #  must use 127.0.0.1, spotify will reject localhost as mfw 'not secure'
     "USE_REMOTE_SETUP_MODE": True,
+    "DEBUG_MODE": False,
 }
 
 def get_env_var(var_name, default=None, var_type=str):
@@ -171,6 +172,7 @@ def load_and_merge_config():
         },
         "genre_blacklist": _get_value("MD_GENRE_BLACKLIST", "genre_blacklist", DEFAULT_CONFIG["genre_blacklist"], list),
         "USE_REMOTE_SETUP_MODE": _get_value("MD_USE_REMOTE_SETUP_MODE", "USE_REMOTE_SETUP_MODE", DEFAULT_CONFIG["USE_REMOTE_SETUP_MODE"], bool),
+        "DEBUG_MODE": _get_value("MD_DEBUG_MODE", "DEBUG_MODE", DEFAULT_CONFIG["DEBUG_MODE"], bool),
     }
     return config
 
@@ -181,6 +183,7 @@ CLIENT_ID = APP_CONFIG["SPOTIPY_CLIENT_ID"]
 CLIENT_SECRET = APP_CONFIG["SPOTIPY_CLIENT_SECRET"]
 REDIRECT_URI = APP_CONFIG["SPOTIPY_REDIRECT_URI"]
 USE_REMOTE_SETUP_MODE = APP_CONFIG["USE_REMOTE_SETUP_MODE"]
+DEBUG_MODE = APP_CONFIG["DEBUG_MODE"]
 
 if USE_REMOTE_SETUP_MODE:
     print("INFO: Remote Setup Mode enabled. Using device setup page for remote authentication.")
@@ -307,7 +310,7 @@ def callback():
     
     try:
         # Get access token using the authorisation code and save it to cache
-        token_info = sp_oauth.get_access_token(code)
+        sp_oauth.get_access_token(code)
         print(f"Successfully obtained and cached access token - redirecting to app")
         
         return redirect(url_for('index', _external=True))
@@ -448,7 +451,6 @@ def current_song():
         progress_ms = current_track['progress_ms']
         duration_ms = item['duration_ms']
         shuffle_state = current_track.get('shuffle_state', False) 
-        repeat_state = current_track.get('repeat_state', 'off') 
         
         artist_name_primary = item['artists'][0]['name']
         album_name = item['album']['name']
@@ -740,4 +742,4 @@ if __name__ == '__main__':
     # TODO: Use proper logging instead of print statements
     host = "0.0.0.0"
     port = 5010
-    app.run(host=host, port=port, debug=True) 
+    app.run(host=host, port=port, debug=DEBUG_MODE) 

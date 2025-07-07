@@ -222,8 +222,9 @@ environment:
 | `MD_DISPLAY_LASTFM_PLAYCOUNT`               | `display.lastfm_playcount`              | `True`                                | boolean                | Show playcount (requires Last.fm + username).             |
 | `MD_DISPLAY_HIDE_CURSOR`                    | `display.hide_cursor`                   | `False`                               | boolean                | Hide cursor for kiosk mode (useful for Raspberry Pi).     |
 | `MD_GENRE_BLACKLIST`                        | `genre_blacklist`                       | `["lidarr", "seen live", ...]`        | list (comma-sep str)   | Genres to hide. Env var: "tag1,tag2,tag3".                 |
-| `MD_USE_REMOTE_SETUP_MODE`   | `USE_REMOTE_SETUP_MODE` | Enable/Disable guided remote setup. Default: `true` |
-| `MD_SPOTIPY_REDIRECT_URI`    | `SPOTIPY_REDIRECT_URI`  | OAuth callback URI. Only specify if you need to change the callback URI for some reason. Default: `http://127.0.0.1:5010/callback` |
+| `MD_USE_REMOTE_SETUP_MODE`                  | `USE_REMOTE_SETUP_MODE`                 | `True`                                | boolean                | Enable/disable guided remote setup.                       |
+| `MD_DEBUG_MODE`                             | `DEBUG_MODE`                            | `False`                               | boolean                | Enable Flask debug mode. |
+| `MD_SPOTIPY_REDIRECT_URI`                   | `SPOTIPY_REDIRECT_URI`                  | `http://127.0.0.1:5010/callback`     | string                 | OAuth callback URI. Only change if needed.                |
 
 > [!NOTE]
 > For boolean environment variables, values like 'true', '1', 't', 'yes', 'y' (case-insensitive) are considered true. For list environment variables, provide a comma-separated string.
