@@ -182,12 +182,10 @@ CLIENT_SECRET = APP_CONFIG["SPOTIPY_CLIENT_SECRET"]
 REDIRECT_URI = APP_CONFIG["SPOTIPY_REDIRECT_URI"]
 USE_REMOTE_SETUP_MODE = APP_CONFIG["USE_REMOTE_SETUP_MODE"]
 
-# Detect deployment type and set redirect URI
 if USE_REMOTE_SETUP_MODE:
-    REDIRECT_URI = "http://127.0.0.1:8888/callback"
-    print("INFO: Remote Setup Mode enabled. Using 127.0.0.1 redirect URI for remote authentication.")
-elif REDIRECT_URI == "http://127.0.0.1:5000/callback":
-    print("INFO: Using local development authentication (127.0.0.1:5000).")
+    print("INFO: Remote Setup Mode enabled. Using device setup page for remote authentication.")
+else:
+    print("INFO: Direct authentication mode enabled.")
 
 SCOPE = "user-read-currently-playing user-read-playback-state user-library-read user-library-modify" 
 CACHE_PATH = ".spotify_cache/token.cache"
@@ -297,7 +295,6 @@ def index():
         else:
             auth_url = sp_oauth.get_authorize_url()
             return redirect(auth_url)
-    
     
     return render_template('index.html', app_config=json.dumps(APP_CONFIG))
 
