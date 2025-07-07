@@ -68,7 +68,7 @@ This project should ideally be used with [PulsDestra,](https://github.com/monste
     ```
 
 -  **Authenticate:** 
-    - Open your browser to `http://127.0.0.1:5000/` or `http://<your-ip>:5000/` (if MeloDestra is running on a different machine). You will be redirected to Spotify to log in and authorize the application.
+    - Open your browser to `http://127.0.0.1:5010/` or `http://<your-ip>:5010/` (if MeloDestra is running on a different machine). You will be redirected to Spotify to log in and authorize the application.
     - You will be redirected back to MeloDestra where you should see the MeloDestra application.
 
 
@@ -144,7 +144,7 @@ To use MeloDestra, you will need API keys from Spotify. For enhanced features li
     -   You will need both of these for the `MD_SPOTIPY_CLIENT_ID` and `MD_SPOTIPY_CLIENT_SECRET` configuration values.
 4.  **Set the Redirect URI:**
     -   In your app settings on the Spotify Developer Dashboard, click on "Edit Settings".
-    -   In the "Redirect URIs" section, add: `http://127.0.0.1:8888/callback`
+    -   In the "Redirect URIs" section, add: `http://127.0.0.1:5010/callback`
     -   Click "Save" at the bottom of the settings page.
 
 ### Last.fm API Keys (Optional)
@@ -176,7 +176,6 @@ If you need to disable Remote Setup Mode for some reason:
 ```yaml
 environment:
   MD_USE_REMOTE_SETUP_MODE: 'false'
-  MD_SPOTIPY_REDIRECT_URI: 'http://your-server:5010/callback'
 ```
 
 > [!NOTE]
@@ -196,8 +195,6 @@ environment:
 |------------------------------|-------------------------|---------------------------------|
 | `MD_SPOTIPY_CLIENT_ID`       | `SPOTIPY_CLIENT_ID`     | Your Spotify Application Client ID. |
 | `MD_SPOTIPY_CLIENT_SECRET`   | `SPOTIPY_CLIENT_SECRET` | Your Spotify Application Client Secret. |
-| `MD_USE_REMOTE_SETUP_MODE`   | `USE_REMOTE_SETUP_MODE` | Enable guided remote setup. Default: `true` (recommended) |
-| `MD_SPOTIPY_REDIRECT_URI`    | `SPOTIPY_REDIRECT_URI`  | OAuth callback URI. Only needed if remote setup mode disabled. |
 
 **Optional Settings (with defaults):**
 
@@ -227,6 +224,8 @@ environment:
 | `MD_DISPLAY_LASTFM_PLAYCOUNT`               | `display.lastfm_playcount`              | `True`                                | boolean                | Show playcount (requires Last.fm + username).             |
 | `MD_DISPLAY_HIDE_CURSOR`                    | `display.hide_cursor`                   | `False`                               | boolean                | Hide cursor for kiosk mode (useful for Raspberry Pi).     |
 | `MD_GENRE_BLACKLIST`                        | `genre_blacklist`                       | `["lidarr", "seen live", ...]`        | list (comma-sep str)   | Genres to hide. Env var: "tag1,tag2,tag3".                 |
+| `MD_USE_REMOTE_SETUP_MODE`   | `USE_REMOTE_SETUP_MODE` | Enable/Disable guided remote setup. Default: `true` |
+| `MD_SPOTIPY_REDIRECT_URI`    | `SPOTIPY_REDIRECT_URI`  | OAuth callback URI. Only specify if you need to change the callback URI for some reason. Default: `http://127.0.0.1:5010/callback` |
 
 > [!NOTE]
 > For boolean environment variables, values like 'true', '1', 't', 'yes', 'y' (case-insensitive) are considered true. For list environment variables, provide a comma-separated string.

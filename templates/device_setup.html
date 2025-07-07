@@ -3,131 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeloDestra - Remote Setup</title>
+    <title>Login Required</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1db954, #191414);
-            color: white;
+            background: #000;
+            color: #fff;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .container {
-            max-width: 600px;
-            background: rgba(25, 20, 20, 0.9);
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
             text-align: center;
+            line-height: 1.6;
         }
         h1 {
+            font-size: 1.8em;
+            margin-bottom: 30px;
             color: #1db954;
+        }
+        p {
             margin-bottom: 20px;
-            font-size: 2.5em;
-        }
-        h2 {
-            color: #1db954;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-        .setup-steps {
-            text-align: left;
-            margin: 30px 0;
-        }
-        .step {
-            background: rgba(29, 185, 84, 0.1);
-            border-left: 4px solid #1db954;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        .step-number {
-            color: #1db954;
-            font-weight: bold;
-            font-size: 1.2em;
+            color: #ccc;
         }
         .auth-button {
             background: #1db954;
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.1em;
-            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1em;
             text-decoration: none;
             display: inline-block;
-            margin: 20px 0;
-            transition: background 0.3s;
+            margin: 15px 0;
             cursor: pointer;
         }
         .auth-button:hover {
             background: #1ed760;
         }
-        .warning {
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #ffc107;
-        }
-        .code-block {
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 6px;
+        input {
+            width: 100%;
             padding: 10px;
-            font-family: 'Courier New', monospace;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #222;
+            color: white;
             margin: 10px 0;
-            color: #1db954;
+            box-sizing: border-box;
         }
-        .icon {
-            font-size: 3em;
-            margin-bottom: 20px;
+        .note {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        code {
+            background: #222;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon">🎵</div>
-        <h1>MeloDestra Remote Setup</h1>
-        <p>Welcome! Your MeloDestra is running in <strong>Remote Setup Mode</strong> to make remote authentication easier.</p>
+        <h1>Spotify Authentication Required</h1>
         
-        <div class="warning">
-            <strong>⚠️ Important:</strong> This setup only needs to be done once. After authentication, MeloDestra will remember your Spotify account.
-        </div>
+        <p>Click the button below to authorise with Spotify. You'll see an error page after logging in, this is normal. Copy the URL from that error page and paste it below.</p>
+        
+        <a href="/device-auth" class="auth-button" target="_blank">Authorize with Spotify</a>
+        
+        <input type="text" id="callbackUrl" placeholder="http://127.0.0.1:5010/callback?code=YOUR_CODE_HERE">
+        <button onclick="processCallback()" class="auth-button">Complete Setup</button>
 
-        <div class="setup-steps">
-            <h2>🚀 Quick Setup</h2>
-            
-            <div class="step">
-                <div class="step-number">Step 1:</div>
-                <strong>⚠️ Important:</strong> When you click authorise, you'll see an error page after logging in. <strong>This is normal!</strong> Just copy the URL from that error page.
-                <br><br>
-                <a href="/device-auth" class="auth-button" target="_blank">🎧 authorise with Spotify</a>
-            </div>
-
-            <div class="step">
-                <div class="step-number">Step 2:</div>
-                After authorising, copy the full URL from the error page (starts with <code>http://127.0.0.1:8888/callback?code=</code>) and paste it here:
-                <br><br>
-                <input type="text" id="callbackUrl" placeholder="http://127.0.0.1:8888/callback?code=YOUR_CODE_HERE" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: white; margin-bottom: 10px;">
-                <br>
-                <button onclick="processCallback()" class="auth-button">✅ Complete Setup</button>
-            </div>
-        </div>
-
-        <div class="warning">
-            <strong>First time?</strong> Make sure your Spotify app has this redirect URI: <code>http://127.0.0.1:8888/callback</code><br>
-            <small>Configure it at <a href="https://developer.spotify.com/dashboard" target="_blank" style="color: #1db954;">Spotify Developer Dashboard</a> → Your App → Edit Settings → Redirect URIs</small>
-        </div>
-
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #444; font-size: 0.9em; color: #999;">
-            <p><strong>Alternative:</strong> If you prefer the standard redirect URI method, you can disable remote setup mode by setting <code>MD_USE_REMOTE_SETUP_MODE=false</code> and configuring <code>MD_SPOTIPY_REDIRECT_URI</code> to point to your server.</p>
-        </div>
     </div>
 
     <script>
@@ -138,7 +91,6 @@
                 return;
             }
             
-            // Extract the code parameter from the URL
             const urlParams = new URLSearchParams(url.split('?')[1] || url.split('#')[1] || '');
             const code = urlParams.get('code');
             
@@ -147,11 +99,9 @@
                 return;
             }
             
-            // Redirect to our callback with the code
             window.location.href = `/callback?code=${encodeURIComponent(code)}`;
         }
         
-        // Auto-detect if user is on the callback page and extract the code
         if (window.location.search.includes('code=') || window.location.hash.includes('code=')) {
             const urlParams = new URLSearchParams(window.location.search || window.location.hash.substring(1));
             const code = urlParams.get('code');

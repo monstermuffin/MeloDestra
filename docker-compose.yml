@@ -6,15 +6,12 @@ services:
     environment:
       MD_SPOTIPY_CLIENT_ID: 'YOUR_SPOTIFY_CLIENT_ID_HERE'
       MD_SPOTIPY_CLIENT_SECRET: 'YOUR_SPOTIFY_CLIENT_SECRET_HERE'
-      # MD_USE_REMOTE_SETUP_MODE: 'true'  # Default: true (recommended for remote deployment)
-      # MD_SPOTIPY_REDIRECT_URI: 'http://127.0.0.1:8888/callback'  # Only needed if remote setup mode disabled
       MD_LASTFM_API_KEY: 'YOUR_LASTFM_API_KEY_HERE'
       MD_LASTFM_SHARED_SECRET: 'YOUR_LASTFM_SHARED_SECRET_HERE'
       MD_LASTFM_USERNAME: 'YOUR_LASTFM_USERNAME_HERE'
       MD_DISPLAY_GENRE: 'true'
       MD_DISPLAY_LASTFM_PLAYCOUNT: 'true'
       MD_ANIMATED_BACKGROUND_ENABLED: 'true'
-      MD_REFRESH_INTERVAL_MS: '7000'
       # MD_DISPLAY_HIDE_CURSOR: 'true' # Uncomment for kiosk mode (hides cursor)
 
     volumes:

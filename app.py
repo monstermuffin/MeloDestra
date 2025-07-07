@@ -54,7 +54,7 @@ DEFAULT_CONFIG = {
         "lidarr", "seen live", "fip", "favorite", "favs",
         "owned", "wishlist", "library", "collection", "to listen", "buy, Funk_add_to_lidarr_batch_1"
     ],
-    "SPOTIPY_REDIRECT_URI": "http://127.0.0.1:5000/callback", #  must use 127.0.0.1, spotify will reject localhost as mfw 'not secure'
+    "SPOTIPY_REDIRECT_URI": "http://127.0.0.1:5010/callback", #  must use 127.0.0.1, spotify will reject localhost as mfw 'not secure'
     "USE_REMOTE_SETUP_MODE": True,
 }
 
@@ -742,5 +742,5 @@ def trigger_visual_feedback():
 if __name__ == '__main__':
     # TODO: Use proper logging instead of print statements
     host = "0.0.0.0"
-    port = 5000
+    port = 5010
     app.run(host=host, port=port, debug=True) 
