@@ -24,7 +24,7 @@ MeloDestra's design is responsive and looks good on all screen sizes and orienta
 
 ## Stack
 > [!NOTE]
-> Most of the Javascript and ~~a small portion of~~ the CSS was vibe coded because I didn't want to deal with Javascript and CSS. Shoot me.
+> Most of the Javascript and ~~a small portion of~~ the CSS was vibe coded because I didn't want to deal with Javascript and CSS. These tools do UI work a lot better than I could teach myself to ever do.
 
 - **Backend:** Python 3 with Flask web framework.
 - **Spotify Integration:** `spotipy` library.
