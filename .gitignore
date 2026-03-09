@@ -10,6 +10,9 @@ venv/
 .Trashes
 config.yml
 .spotify_cache
+*au*
 docker-compose.test.yml
 *.md
 !README.md
+*png
+*log
