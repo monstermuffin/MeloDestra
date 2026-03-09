@@ -282,7 +282,8 @@ last_known_track_id = None
 last_known_liked_status = False
 last_known_shuffle_state = False 
 last_known_play_count = None 
-last_known_artist_genres = [] 
+last_known_artist_genres = []
+_last_logged_state = None
 
 def get_token():
     token_info = sp_oauth.get_cached_token()
@@ -641,8 +642,12 @@ def current_song():
             "play_count": play_count 
         }
         
-        print(f"Current track: {track_name} | Liked: {is_liked} | Shuffle: {shuffle_state}")
-        
+        current_state = (track_name, is_liked, shuffle_state)
+        global _last_logged_state
+        if current_state != _last_logged_state:
+            print(f"Current track: {track_name} | Liked: {is_liked} | Shuffle: {shuffle_state}")
+            _last_logged_state = current_state
+
         return jsonify(data)
     except Exception as e: 
         print(f"Error in current_song: {e}") 

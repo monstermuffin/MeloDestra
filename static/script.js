@@ -280,10 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Determines if a color is light based on its luminance.
     function isColorLight(rgb) {
-        return calculateLuminance(rgb) > 0.5; 
+        return calculateLuminance(rgb) > 0.5;
     }
 
-    
     // Handles color extraction and application when album artwork loads.
     if (artworkImg && colorThief) {
         artworkImg.addEventListener('load', () => {
@@ -300,10 +299,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     
                     // Set CSS variables for background palette colors, using defaults if necessary.
-                    const defaultBgColors = [[0,0,0], [17,17,17], [34,34,34], [51,51,51], [68,68,68], [85,85,85], [102,102,102], [119,119,119]]; 
+                    const defaultBgColors = [[0,0,0], [17,17,17], [34,34,34], [51,51,51], [68,68,68], [85,85,85], [102,102,102], [119,119,119]];
                     for (let i = 0; i < BG_PALETTE_COUNT; i++) {
-                        
-                        const defaultColor = defaultBgColors[i % defaultBgColors.length]; 
+                        const defaultColor = defaultBgColors[i % defaultBgColors.length];
                         const color = (paletteForBackground && paletteForBackground[i]) ? paletteForBackground[i] : defaultColor;
                         rootStyle.setProperty(`--bg-palette-color-${i+1}`, `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
                     }
@@ -511,7 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 
                 // Update like icon status.
-                console.log("Updating like icon. data.is_liked:", data.is_liked);
                 const currentlyLiked = likeIconEl.classList.contains('active');
                 if (data.is_liked) {
                     if (!currentlyLiked) { // Animate if status changed.

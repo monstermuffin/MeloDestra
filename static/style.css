@@ -115,14 +115,14 @@ body.hide-cursor * {
     box-sizing: border-box; 
     width: 100%; 
     text-align: center; 
-    font-size: 1.4vmin; 
-    font-weight: 400; 
-    color: var(--dynamic-text-color, #ffffff); 
-    margin: 0.5vh 0 0.5vh 0; 
+    font-size: 1.5vmin;
+    font-weight: 400;
+    color: var(--dynamic-text-color, #ffffff);
+    margin: 0.5vh 0 0.5vh 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    opacity: 0.8; 
+    opacity: 0.85;
     transition: color 0.5s var(--animation-ease, ease-in-out), 
                 opacity var(--fade-duration, 0.4s) var(--animation-ease, ease-in-out); 
 }
@@ -149,7 +149,7 @@ body.hide-cursor * {
 #progress-bar-container {
     background-color: rgba(80, 80, 80, 0.5); 
     border-radius: 0; 
-    height: 4px; 
+    height: 4px;
     overflow: hidden;
     margin-top: 1.5vh; 
     margin-bottom: 1.5vh; 
@@ -173,7 +173,7 @@ body.hide-cursor * {
     font-weight: 400; 
     color: var(--dynamic-text-color, #ffffff); 
     width: 100%;
-    text-shadow: 0 0 3px rgba(0, 0, 0, 0.7); 
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     transition: color 1s var(--animation-ease, ease-in-out); 
 }
 
@@ -264,9 +264,9 @@ body.hide-cursor * {
     aspect-ratio: 1 / 1; 
     object-fit: cover; 
     border-radius: 12px; 
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-    overflow: hidden; 
-    transform-origin: center center; 
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    transform-origin: center center;
     animation: var(--kb-animation-name, none) var(--kb-duration, 20s) var(--animation-ease, ease-in-out) infinite alternate;
     transition: opacity var(--fade-duration, 0.4s) var(--animation-ease, ease-in-out), 
                 transform var(--fade-duration, 0.4s) var(--animation-ease, ease-in-out); 
