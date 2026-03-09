@@ -88,13 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    // Initialize ColorThief for extracting colors from album art.
-    let colorThief = null;
-    try {
-        colorThief = new ColorThief();
-    } catch (e) {
-        console.error("Failed to initialize ColorThief. Color features disabled.", e);
+    // Note: We are now using Vibrant.js instead of ColorThief.
+    // Vibrant is loaded via CDN in index.html and provides the global `Vibrant` object.
 
+    // Helper function to safely extract RGB array from a Vibrant swatch
+    function getSwatchRgb(swatch, defaultRgb = [255, 255, 255]) {
+        return swatch ? swatch.getRgb() : defaultRgb;
     }
 
     // Visual feedback functionality
@@ -284,81 +283,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handles color extraction and application when album artwork loads.
-    if (artworkImg && colorThief) {
+    if (artworkImg) {
         artworkImg.addEventListener('load', () => {
             if (artworkImg.src && artworkImg.complete && artworkImg.naturalHeight > 0 && artworkImg.style.display !== 'none') {
                 try {
+                    // Initialize Vibrant.js
+                    const vibrant = new Vibrant(artworkImg, {
+                        quality: COLOR_THIEF_QUALITY, // Reuse the same quality config setting
+                        colorCount: 64
+                    });
 
-                    // Helper function to convert RGB to HSL for vibrancy sorting
-                    function rgbToHsl(r, g, b) {
-                        r /= 255; g /= 255; b /= 255;
-                        const max = Math.max(r, g, b), min = Math.min(r, g, b);
-                        let h = 0, s = 0, l = (max + min) / 2;
-                        if (max !== min) {
-                            const d = max - min;
-                            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                            switch (max) {
-                                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                                case g: h = (b - r) / d + 2; break;
-                                case b: h = (r - g) / d + 4; break;
+                    vibrant.getPalette().then(palette => {
+                        if (!palette) throw new Error("Vibrant returned no palette");
+
+                        // 1. Choose Progress Bar Color
+                        // Prefer Vibrant, fallback to LightVibrant or Muted
+                        let progressBarSwatch = palette.Vibrant || palette.LightVibrant || palette.Muted;
+                        let progressBarColor = getSwatchRgb(progressBarSwatch, [255, 255, 255]);
+
+                        const progressBarColorString = `rgb(${progressBarColor[0]}, ${progressBarColor[1]}, ${progressBarColor[2]})`;
+                        progressBar.style.backgroundColor = progressBarColorString;
+                        progressBar.style.boxShadow = `0 0 15px ${progressBarColorString}, 0 0 5px ${progressBarColorString}`;
+
+                        // 2. Prepare Background Palette
+                        // First, extract all available swatches to determine the true overall brightness of the artwork
+                        const allSwatches = Object.values(palette).filter(s => s !== null && s !== undefined);
+
+                        // Helper function to convert RGB to HSL 
+                        function rgbToHsl(r, g, b) {
+                            r /= 255; g /= 255; b /= 255;
+                            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                            let h = 0, s = 0, l = (max + min) / 2;
+                            if (max !== min) {
+                                const d = max - min;
+                                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                                switch (max) {
+                                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                                    case g: h = (b - r) / d + 2; break;
+                                    case b: h = (r - g) / d + 4; break;
+                                }
+                                h /= 6;
                             }
-                            h /= 6;
+                            return [h * 360, s * 100, l * 100];
                         }
-                        return [h * 360, s * 100, l * 100];
-                    }
-
-                    // Extract dominant color and full palette
-                    const rawDominantColor = colorThief.getColor(artworkImg, COLOR_THIEF_QUALITY);
-                    // Get a larger palette to find the most vibrant color
-                    const fullPalette = colorThief.getPalette(artworkImg, 10, COLOR_THIEF_QUALITY) || [];
-
-                    // 1. Find the best color for the progress bar (vibrant, not too dark or light)
-                    let bestProgressBarColor = rawDominantColor || [255, 255, 255];
-                    let bestScore = -1000;
-
-                    // Consider the dominant color and the palette
-                    const progressCandidates = [rawDominantColor, ...fullPalette].filter(c => c);
-
-                    for (let i = 0; i < progressCandidates.length; i++) {
-                        const color = progressCandidates[i];
-                        const [h, s, l] = rgbToHsl(color[0], color[1], color[2]);
-
-                        // Score formula: favor high saturation, penalize extreme lightness/darkness
-                        let score = s; // Base score is saturation (0-100)
-
-                        // Heavily penalize colors that are too dark (<20%) or too light (>80%)
-                        if (l < 20 || l > 80) {
-                            score -= 50;
-                        } else {
-                            // Bonus for being closer to middle lightness (50%)
-                            score += (20 - Math.abs(l - 50) * 0.4);
-                        }
-
-                        // Small bonus for the first few colors (more dominant in the image)
-                        if (i === 0) score += 15; // Raw dominant
-                        else if (i < 3) score += 5; // Top palette colors
-
-                        if (score > bestScore) {
-                            bestScore = score;
-                            bestProgressBarColor = color;
-                        }
-                    }
-
-                    let progressBarColor = bestProgressBarColor;
-                    const progressBarColorString = `rgb(${progressBarColor[0]}, ${progressBarColor[1]}, ${progressBarColor[2]})`;
-                    progressBar.style.backgroundColor = progressBarColorString;
-                    progressBar.style.boxShadow = `0 0 15px ${progressBarColorString}, 0 0 5px ${progressBarColorString}`;
-
-                    // 2. Prepare background palette
-                    let paletteForBackground = colorThief.getPalette(artworkImg, BG_PALETTE_COUNT, COLOR_THIEF_QUALITY) || [];
-                    if (paletteForBackground.length > 0) {
-                        // Calculate overall average luminance of the palette
-                        let totalL = 0;
-                        paletteForBackground.forEach(c => {
-                            const [, , l] = rgbToHsl(c[0], c[1], c[2]);
-                            totalL += l;
-                        });
-                        const avgLuminance = totalL / paletteForBackground.length;
 
                         function hslToRgb(h, s, l) {
                             s /= 100; l /= 100;
@@ -368,77 +335,153 @@ document.addEventListener('DOMContentLoaded', () => {
                             return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
                         }
 
-                        // Cap lightness for moody/dark backgrounds to prevent washing out the player
-                        const maxBgLightness = avgLuminance < 40 ? 30 : (avgLuminance < 60 ? 45 : 70);
+                        let trueAvgLuminance = 0;
+                        let trueAvgSaturation = 0;
 
-                        for (let i = 0; i < paletteForBackground.length; i++) {
-                            let [h, s, l] = rgbToHsl(paletteForBackground[i][0], paletteForBackground[i][1], paletteForBackground[i][2]);
-                            if (l > maxBgLightness) l = maxBgLightness;
-                            // Boost saturation slightly if the track is very dark/moody to keep the background from looking muddy
-                            if (avgLuminance < 40 && s < 40) s += 20;
-                            paletteForBackground[i] = hslToRgb(h, s, l);
+                        allSwatches.forEach(swatch => {
+                            const [r, g, b] = swatch.getRgb();
+                            const [, s, l] = rgbToHsl(r, g, b);
+                            trueAvgLuminance += l;
+                            trueAvgSaturation += s;
+                        });
+
+                        if (allSwatches.length > 0) {
+                            trueAvgLuminance /= allSwatches.length;
+                            trueAvgSaturation /= allSwatches.length;
                         }
 
-                        // Sort the background palette colors by hue so they form a smooth gradient
-                        paletteForBackground.sort((a, b) => {
-                            const hslA = rgbToHsl(a[0], a[1], a[2]);
-                            const hslB = rgbToHsl(b[0], b[1], b[2]);
-                            return hslA[0] - hslB[0];
-                        });
-                    }
+                        // Select swatches for the gradient
+                        let availableSwatches = [];
+
+                        // If the artwork is truly dark, exclude light swatches so it stays moody
+                        if (trueAvgLuminance < 40) {
+                            availableSwatches = [
+                                palette.DarkMuted,
+                                palette.DarkVibrant,
+                                palette.Muted,
+                                palette.Vibrant
+                            ];
+                        } else {
+                            // Normal or light artwork: include all swatches including bright ones
+                            availableSwatches = [
+                                palette.DarkMuted,
+                                palette.DarkVibrant,
+                                palette.Muted,
+                                palette.Vibrant,
+                                palette.LightMuted,
+                                palette.LightVibrant
+                            ];
+                        }
+
+                        availableSwatches = availableSwatches.filter(s => s !== null && s !== undefined);
+
+                        let paletteForBackground = [];
+
+                        if (availableSwatches.length > 0) {
+                            // Convert swatches to RGB arrays
+                            paletteForBackground = availableSwatches.map(s => s.getRgb());
+
+                            // If we don't have enough colors for the gradient, duplicate some
+                            while (paletteForBackground.length > 0 && paletteForBackground.length < BG_PALETTE_COUNT) {
+                                paletteForBackground.push(paletteForBackground[Math.floor(Math.random() * paletteForBackground.length)]);
+                            }
+
+                            // Dynamic lightness capping based on true image brightness
+                            // Very dark art gets capped at 45. Normal art is uncapped/capped at 85 to stay bright!
+                            const maxBgLightness = trueAvgLuminance < 40 ? 45 : 85;
+
+                            for (let i = 0; i < paletteForBackground.length; i++) {
+                                let [h, s, l] = rgbToHsl(paletteForBackground[i][0], paletteForBackground[i][1], paletteForBackground[i][2]);
+
+                                // Cap bright colors so they don't blind the user
+                                if (l > maxBgLightness) l = maxBgLightness;
+
+                                // Aggressively desaturate ONLY if it's a very dark artwork
+                                // This pulls muddy browns back towards cool dark grays/blacks
+                                if (trueAvgLuminance < 35) {
+                                    s = s * 0.3; // Reduce saturation by 70% to make it dark grey/black
+                                } else if (trueAvgLuminance < 50 && trueAvgSaturation < 40) {
+                                    s = s * 0.6; // Reduce saturation by 40% if the image is mostly unsaturated
+                                }
+
+                                paletteForBackground[i] = hslToRgb(h, s, l);
+                            }
+
+                            // Sort the background palette colors by hue so they form a smooth gradient
+                            paletteForBackground.sort((a, b) => {
+                                const hslA = rgbToHsl(a[0], a[1], a[2]);
+                                const hslB = rgbToHsl(b[0], b[1], b[2]);
+                                return hslA[0] - hslB[0];
+                            });
+                        }
 
 
-                    // Set CSS variables for background palette colors, using defaults if necessary.
-                    const defaultBgColors = [[0, 0, 0], [17, 17, 17], [34, 34, 34], [51, 51, 51], [68, 68, 68], [85, 85, 85], [102, 102, 102], [119, 119, 119]];
-                    for (let i = 0; i < BG_PALETTE_COUNT; i++) {
-                        const defaultColor = defaultBgColors[i % defaultBgColors.length];
-                        const color = (paletteForBackground && paletteForBackground[i]) ? paletteForBackground[i] : defaultColor;
-                        rootStyle.setProperty(`--bg-palette-color-${i + 1}`, `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
-                    }
+                        // Set CSS variables for background palette colors, using defaults if necessary.
+                        const defaultBgColors = [[0, 0, 0], [17, 17, 17], [34, 34, 34], [51, 51, 51], [68, 68, 68], [85, 85, 85], [102, 102, 102], [119, 119, 119]];
+                        for (let i = 0; i < BG_PALETTE_COUNT; i++) {
+                            const defaultColor = defaultBgColors[i % defaultBgColors.length];
+                            const color = (paletteForBackground && paletteForBackground[i]) ? paletteForBackground[i] : defaultColor;
+                            rootStyle.setProperty(`--bg-palette-color-${i + 1}`, `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+                        }
 
-                    // Clear unused palette color variables.
-                    for (let i = BG_PALETTE_COUNT; i < 8; i++) {
-                        rootStyle.setProperty(`--bg-palette-color-${i + 1}`, null);
-                    }
-
-
-                    // Determine appropriate text colors based on background and progress bar luminance.
-                    const bodyPaletteColor1 = (paletteForBackground && paletteForBackground[0]) ? paletteForBackground[0] : defaultBgColors[0];
-                    const bodyLuminance = calculateLuminance(bodyPaletteColor1);
-                    const progressLuminance = calculateLuminance(progressBarColor);
-                    const darkTextColor = '#000000';
-                    const lightTextColor = '#FFFFFF';
-
-                    let bodyTextColor;
-                    // If body background color is in the "gray zone", use light text. Otherwise, choose based on luminance.
-                    if (bodyLuminance > GRAY_ZONE_LOW && bodyLuminance < GRAY_ZONE_HIGH) {
-                        bodyTextColor = lightTextColor;
-                    } else {
-                        bodyTextColor = bodyLuminance > 0.5 ? darkTextColor : lightTextColor;
-                    }
-
-                    let timeTextColor;
-                    // If progress bar color is in the "gray zone", use light text. Otherwise, choose based on luminance.
-                    if (progressLuminance > GRAY_ZONE_LOW && progressLuminance < GRAY_ZONE_HIGH) {
-                        timeTextColor = lightTextColor;
-                    } else {
-                        timeTextColor = progressLuminance > 0.5 ? darkTextColor : lightTextColor;
-                    }
+                        // Clear unused palette color variables.
+                        for (let i = BG_PALETTE_COUNT; i < 8; i++) {
+                            rootStyle.setProperty(`--bg-palette-color-${i + 1}`, null);
+                        }
 
 
-                    // Apply determined text colors.
-                    trackNameEl.style.color = bodyTextColor;
-                    artistNameEl.style.color = bodyTextColor;
-                    genreInfoEl.style.color = bodyTextColor;
-                    timeInfoEl.style.color = timeTextColor;
+                        // Determine appropriate text colors based on background and progress bar luminance.
+                        const bodyPaletteColor1 = (paletteForBackground && paletteForBackground[0]) ? paletteForBackground[0] : defaultBgColors[0];
+                        const bodyLuminance = calculateLuminance(bodyPaletteColor1);
+                        const progressLuminance = calculateLuminance(progressBarColor);
+                        const darkTextColor = '#000000';
+                        const lightTextColor = '#FFFFFF';
 
-                    if (playCountInfoEl) playCountInfoEl.style.color = bodyTextColor;
+                        let bodyTextColor;
+                        // If body background color is in the "gray zone", use light text. Otherwise, choose based on luminance.
+                        if (bodyLuminance > GRAY_ZONE_LOW && bodyLuminance < GRAY_ZONE_HIGH) {
+                            bodyTextColor = lightTextColor;
+                        } else {
+                            bodyTextColor = bodyLuminance > 0.5 ? darkTextColor : lightTextColor;
+                        }
+
+                        let timeTextColor;
+                        // If progress bar color is in the "gray zone", use light text. Otherwise, choose based on luminance.
+                        if (progressLuminance > GRAY_ZONE_LOW && progressLuminance < GRAY_ZONE_HIGH) {
+                            timeTextColor = lightTextColor;
+                        } else {
+                            timeTextColor = progressLuminance > 0.5 ? darkTextColor : lightTextColor;
+                        }
 
 
-                    likeIconEl.style.color = bodyTextColor;
-                    shuffleIconEl.style.color = bodyTextColor;
+                        // Apply determined text colors.
+                        trackNameEl.style.color = bodyTextColor;
+                        artistNameEl.style.color = bodyTextColor;
+                        genreInfoEl.style.color = bodyTextColor;
+                        timeInfoEl.style.color = timeTextColor;
 
-                    if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = bodyTextColor;
+                        if (playCountInfoEl) playCountInfoEl.style.color = bodyTextColor;
+
+
+                        likeIconEl.style.color = bodyTextColor;
+                        shuffleIconEl.style.color = bodyTextColor;
+
+                        if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = bodyTextColor;
+
+                    }).catch(error => {
+                        console.error('Error extracting Vibrant palette:', error);
+                        // Fallback to default colors in case of an error.
+                        rootStyle.setProperty('--bg-palette-color-1', '#000000');
+                        rootStyle.setProperty('--bg-palette-color-2', '#111111');
+                        rootStyle.setProperty('--bg-palette-color-3', '#000000');
+                        rootStyle.setProperty('--bg-palette-color-4', '#111111');
+                        rootStyle.setProperty('--bg-palette-color-5', '#000000');
+
+                        if (playCountInfoEl) playCountInfoEl.style.color = '#ffffff';
+                        likeIconEl.style.color = '#ffffff';
+                        shuffleIconEl.style.color = '#ffffff';
+                        if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = '#ffffff';
+                    });
 
                 } catch (error) {
                     console.error('Error processing colors:', error);
