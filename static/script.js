@@ -1,8 +1,8 @@
-// vibe coded JS - wtf does all this even mean
+// vibe 'coded' JS - not a fucking clue what all this even means
 console.log("MeloDestra loaded.");
 
 // Configuration constants, either from global APP_CONFIG or defaults.
-const CONFIG = window.APP_CONFIG || {}; 
+const CONFIG = window.APP_CONFIG || {};
 const REFRESH_INTERVAL_MS = CONFIG.refresh_interval_ms || 5000;
 const COLOR_THIEF_QUALITY = CONFIG.color_thief_quality || 1; // Lower is faster, higher is better quality. 1 = best, 10 = default.
 const GRAY_ZONE_LOW = CONFIG.gray_zone_low || 0.30; // Luminance threshold for determining if a color is in the "gray zone"
@@ -12,19 +12,19 @@ const FADE_STAGGER_MS = CONFIG.fade_stagger_ms || 50; // Stagger delay for fade 
 // Animation and visual effect constants.
 const ANIMATION_EASE = CONFIG.animation_ease || 'cubic-bezier(0.25, 0.1, 0.25, 1.0)';
 const FADE_DURATION = CONFIG.fade_duration || '0.4s';
-const KEN_BURNS_ENABLED = CONFIG.ken_burns?.enabled !== false; 
+const KEN_BURNS_ENABLED = CONFIG.ken_burns?.enabled !== false;
 const KEN_BURNS_DURATION = CONFIG.ken_burns?.duration || '45s';
 const KEN_BURNS_SCALE = CONFIG.ken_burns?.scale_factor || 1.05;
 
 // Animated background constants.
-const BG_ANIM_ENABLED = CONFIG.animated_background?.enabled !== false; 
+const BG_ANIM_ENABLED = CONFIG.animated_background?.enabled !== false;
 const BG_PALETTE_COUNT = CONFIG.animated_background?.palette_colors || 5; // Number of colors to extract for the animated background.
-const BG_ANIM_DURATION = CONFIG.animated_background?.duration || '45s';
+const BG_ANIM_DURATION = CONFIG.animated_background?.duration || '30s';
 const BG_ANIM_ANGLE = CONFIG.animated_background?.angle || '135deg';
 const BG_ANIM_SIZE = CONFIG.animated_background?.size || '300%';
 
 // Display settings.
-const SHOW_LASTFM_PLAYCOUNT = CONFIG.display?.lastfm_playcount !== false; 
+const SHOW_LASTFM_PLAYCOUNT = CONFIG.display?.lastfm_playcount !== false;
 
 // Apply hide cursor if enabled
 if (CONFIG.display?.hide_cursor === true) {
@@ -33,7 +33,7 @@ if (CONFIG.display?.hide_cursor === true) {
 
 // Main execution block, runs after the DOM is fully loaded.
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // DOM element references.
     const widget = document.getElementById('spotify-widget');
 
@@ -51,13 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const likeIconEl = document.getElementById('like-status-icon');
     const shuffleIconEl = document.getElementById('shuffle-status-icon');
     const progressBarContainer = document.getElementById('progress-bar-container');
-    const playCountInfoEl = document.getElementById('play-count-info'); 
-    const playCountNumberEl = document.getElementById('play-count-number'); 
-    
-    const lastfmIconContainerEl = document.getElementById('lastfm-icon-container'); 
-    const firstScrobbleIconEl = document.getElementById('first-scrobble-icon'); 
+    const playCountInfoEl = document.getElementById('play-count-info');
+    const playCountNumberEl = document.getElementById('play-count-number');
 
-    
+    const lastfmIconContainerEl = document.getElementById('lastfm-icon-container');
+    const firstScrobbleIconEl = document.getElementById('first-scrobble-icon');
+
+
     // Set CSS custom properties for animations and theming.
     const rootStyle = document.documentElement.style;
     rootStyle.setProperty('--animation-ease', ANIMATION_EASE);
@@ -65,13 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
     rootStyle.setProperty('--kb-duration', KEN_BURNS_DURATION);
     rootStyle.setProperty('--kb-scale', KEN_BURNS_SCALE);
     rootStyle.setProperty('--kb-animation-name', KEN_BURNS_ENABLED ? 'kenburns-scale' : 'none');
-    
+
     rootStyle.setProperty('--bg-anim-duration', BG_ANIM_DURATION);
     rootStyle.setProperty('--bg-anim-angle', BG_ANIM_ANGLE);
     rootStyle.setProperty('--bg-anim-size', BG_ANIM_SIZE);
     rootStyle.setProperty('--bg-animation-name', BG_ANIM_ENABLED ? 'animatedBodyBackground' : 'none');
 
-    
+
     // Conditionally hide elements based on configuration.
     if (CONFIG.display?.genre === false) genreInfoEl.style.display = 'none';
     if (CONFIG.display?.like_icon === false) likeIconEl.style.display = 'none';
@@ -79,37 +79,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (CONFIG.display?.progress_bar === false) progressBarContainer.style.display = 'none';
     if (CONFIG.display?.time_info === false) timeInfoEl.style.display = 'none';
     if (!SHOW_LASTFM_PLAYCOUNT) playCountInfoEl.style.display = 'none';
-    
+
     // Hide the icon bar if both like and shuffle icons are disabled.
     if (CONFIG.display?.like_icon === false && CONFIG.display?.shuffle_icon === false) {
         document.getElementById('icon-bar').style.display = 'none';
     }
-    
-    
 
-    
+
+
+
     // Initialize ColorThief for extracting colors from album art.
     let colorThief = null;
     try {
-         colorThief = new ColorThief();
+        colorThief = new ColorThief();
     } catch (e) {
         console.error("Failed to initialize ColorThief. Color features disabled.", e);
-        
+
     }
 
     // Visual feedback functionality
     function triggerVisualFeedback(feedbackType = 'knock') {
         console.log(`Triggering visual feedback: knock detected`);
-        
+
         // Remove any existing feedback classes
         widget.classList.remove('knock-feedback');
-        
+
         // Use the current progress bar color (from color-thief) for the knock feedback
         const progressBarStyle = getComputedStyle(progressBar);
         const backgroundColor = progressBarStyle.backgroundColor;
-        
+
         console.log(`Progress bar background color: ${backgroundColor}`);
-        
+
         // Extract RGB values from the background color
         let r = 255, g = 100, b = 100; // Default bright red fallback
         if (backgroundColor && backgroundColor.includes('rgb')) {
@@ -120,16 +120,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 b = parseInt(rgbMatch[3]);
             }
         }
-        
+
         console.log(`Setting knock color: rgb(${r}, ${g}, ${b})`);
-        
+
         // Create dynamic CSS animation with the album colors
         const styleId = 'dynamic-knock-feedback';
         let existingStyle = document.getElementById(styleId);
         if (existingStyle) {
             existingStyle.remove();
         }
-        
+
         const dynamicCSS = `
             @keyframes dynamicKnockFeedback {
                 0% {
@@ -164,27 +164,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 box-shadow: 0 0 50px rgba(${r}, ${g}, ${b}, 0.6);
             }
         `;
-        
+
         const styleElement = document.createElement('style');
         styleElement.id = styleId;
         styleElement.textContent = dynamicCSS;
         document.head.appendChild(styleElement);
-        
+
         console.log(`Widget classes before: ${widget.className}`);
-        
+
         // Trigger the knock feedback animation with dynamic class
         widget.classList.add('knock-feedback-dynamic');
-        
+
         console.log(`Widget classes after: ${widget.className}`);
         console.log(`Animation should be running for 3 seconds with album color...`);
-        
+
         // Remove the class after animation completes
         setTimeout(() => {
             widget.classList.remove('knock-feedback-dynamic');
             console.log(`Animation complete, classes removed`);
         }, 3500);
     }
-    
+
     // Poll for visual feedback events
     async function checkVisualFeedback() {
         try {
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.debug('Visual feedback check failed:', error);
         }
     }
-    
+
     // Start visual feedback polling
     setInterval(checkVisualFeedback, 500); // Check every 500ms for responsive feedback
 
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isPlaying: false
     };
 
-    
+
     // Set initial transitions for various elements.
     artworkImg.style.transition = `opacity var(--fade-duration) var(--animation-ease), transform var(--fade-duration) var(--animation-ease)`;
     trackInfoDiv.style.transition = `opacity var(--fade-duration) var(--animation-ease), transform var(--fade-duration) var(--animation-ease)`;
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const progressPercent = (clampedProgressMs / lastUpdateInfo.durationMs) * 100;
         progressBar.style.width = `${progressPercent}%`;
         currentTimeEl.textContent = formatTime(clampedProgressMs);
-        
+
         const remainingMs = lastUpdateInfo.durationMs - clampedProgressMs;
         totalTimeEl.textContent = formatTime(remainingMs);
     }
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    
+
     // Animates an icon by briefly scaling it up.
     function animateIcon(element) {
         element.style.transform = 'scale(1.2)';
@@ -266,10 +266,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 
-    
+
     // Calculates the luminance of an RGB color.
     function calculateLuminance(rgb) {
-        if (!rgb || rgb.length < 3) return 0; 
+        if (!rgb || rgb.length < 3) return 0;
         const [r, g, b] = rgb.map(c => {
             c /= 255.0;
             return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     }
 
-    
+
     // Determines if a color is light based on its luminance.
     function isColorLight(rgb) {
         return calculateLuminance(rgb) > 0.5;
@@ -288,30 +288,120 @@ document.addEventListener('DOMContentLoaded', () => {
         artworkImg.addEventListener('load', () => {
             if (artworkImg.src && artworkImg.complete && artworkImg.naturalHeight > 0 && artworkImg.style.display !== 'none') {
                 try {
-                    
-                    // Extract dominant color for progress bar and palette for background.
-                    const dominantColorForProgressBar = colorThief.getColor(artworkImg, COLOR_THIEF_QUALITY);
-                    const paletteForBackground = colorThief.getPalette(artworkImg, BG_PALETTE_COUNT, COLOR_THIEF_QUALITY); 
-                    
-                    let progressBarColor = dominantColorForProgressBar || [255, 255, 255]; // Default to white if extraction fails.
+
+                    // Helper function to convert RGB to HSL for vibrancy sorting
+                    function rgbToHsl(r, g, b) {
+                        r /= 255; g /= 255; b /= 255;
+                        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                        let h = 0, s = 0, l = (max + min) / 2;
+                        if (max !== min) {
+                            const d = max - min;
+                            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                            switch (max) {
+                                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                                case g: h = (b - r) / d + 2; break;
+                                case b: h = (r - g) / d + 4; break;
+                            }
+                            h /= 6;
+                        }
+                        return [h * 360, s * 100, l * 100];
+                    }
+
+                    // Extract dominant color and full palette
+                    const rawDominantColor = colorThief.getColor(artworkImg, COLOR_THIEF_QUALITY);
+                    // Get a larger palette to find the most vibrant color
+                    const fullPalette = colorThief.getPalette(artworkImg, 10, COLOR_THIEF_QUALITY) || [];
+
+                    // 1. Find the best color for the progress bar (vibrant, not too dark or light)
+                    let bestProgressBarColor = rawDominantColor || [255, 255, 255];
+                    let bestScore = -1000;
+
+                    // Consider the dominant color and the palette
+                    const progressCandidates = [rawDominantColor, ...fullPalette].filter(c => c);
+
+                    for (let i = 0; i < progressCandidates.length; i++) {
+                        const color = progressCandidates[i];
+                        const [h, s, l] = rgbToHsl(color[0], color[1], color[2]);
+
+                        // Score formula: favor high saturation, penalize extreme lightness/darkness
+                        let score = s; // Base score is saturation (0-100)
+
+                        // Heavily penalize colors that are too dark (<20%) or too light (>80%)
+                        if (l < 20 || l > 80) {
+                            score -= 50;
+                        } else {
+                            // Bonus for being closer to middle lightness (50%)
+                            score += (20 - Math.abs(l - 50) * 0.4);
+                        }
+
+                        // Small bonus for the first few colors (more dominant in the image)
+                        if (i === 0) score += 15; // Raw dominant
+                        else if (i < 3) score += 5; // Top palette colors
+
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestProgressBarColor = color;
+                        }
+                    }
+
+                    let progressBarColor = bestProgressBarColor;
                     const progressBarColorString = `rgb(${progressBarColor[0]}, ${progressBarColor[1]}, ${progressBarColor[2]})`;
                     progressBar.style.backgroundColor = progressBarColorString;
+                    progressBar.style.boxShadow = `0 0 15px ${progressBarColorString}, 0 0 5px ${progressBarColorString}`;
 
-                    
+                    // 2. Prepare background palette
+                    let paletteForBackground = colorThief.getPalette(artworkImg, BG_PALETTE_COUNT, COLOR_THIEF_QUALITY) || [];
+                    if (paletteForBackground.length > 0) {
+                        // Calculate overall average luminance of the palette
+                        let totalL = 0;
+                        paletteForBackground.forEach(c => {
+                            const [, , l] = rgbToHsl(c[0], c[1], c[2]);
+                            totalL += l;
+                        });
+                        const avgLuminance = totalL / paletteForBackground.length;
+
+                        function hslToRgb(h, s, l) {
+                            s /= 100; l /= 100;
+                            const k = n => (n + h / 30) % 12;
+                            const a = s * Math.min(l, 1 - l);
+                            const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+                            return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
+                        }
+
+                        // Cap lightness for moody/dark backgrounds to prevent washing out the player
+                        const maxBgLightness = avgLuminance < 40 ? 30 : (avgLuminance < 60 ? 45 : 70);
+
+                        for (let i = 0; i < paletteForBackground.length; i++) {
+                            let [h, s, l] = rgbToHsl(paletteForBackground[i][0], paletteForBackground[i][1], paletteForBackground[i][2]);
+                            if (l > maxBgLightness) l = maxBgLightness;
+                            // Boost saturation slightly if the track is very dark/moody to keep the background from looking muddy
+                            if (avgLuminance < 40 && s < 40) s += 20;
+                            paletteForBackground[i] = hslToRgb(h, s, l);
+                        }
+
+                        // Sort the background palette colors by hue so they form a smooth gradient
+                        paletteForBackground.sort((a, b) => {
+                            const hslA = rgbToHsl(a[0], a[1], a[2]);
+                            const hslB = rgbToHsl(b[0], b[1], b[2]);
+                            return hslA[0] - hslB[0];
+                        });
+                    }
+
+
                     // Set CSS variables for background palette colors, using defaults if necessary.
-                    const defaultBgColors = [[0,0,0], [17,17,17], [34,34,34], [51,51,51], [68,68,68], [85,85,85], [102,102,102], [119,119,119]];
+                    const defaultBgColors = [[0, 0, 0], [17, 17, 17], [34, 34, 34], [51, 51, 51], [68, 68, 68], [85, 85, 85], [102, 102, 102], [119, 119, 119]];
                     for (let i = 0; i < BG_PALETTE_COUNT; i++) {
                         const defaultColor = defaultBgColors[i % defaultBgColors.length];
                         const color = (paletteForBackground && paletteForBackground[i]) ? paletteForBackground[i] : defaultColor;
-                        rootStyle.setProperty(`--bg-palette-color-${i+1}`, `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
-                    }
-                    
-                    // Clear unused palette color variables.
-                    for (let i = BG_PALETTE_COUNT; i < 8; i++) { 
-                         rootStyle.setProperty(`--bg-palette-color-${i+1}`, null);
+                        rootStyle.setProperty(`--bg-palette-color-${i + 1}`, `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
                     }
 
-                    
+                    // Clear unused palette color variables.
+                    for (let i = BG_PALETTE_COUNT; i < 8; i++) {
+                        rootStyle.setProperty(`--bg-palette-color-${i + 1}`, null);
+                    }
+
+
                     // Determine appropriate text colors based on background and progress bar luminance.
                     const bodyPaletteColor1 = (paletteForBackground && paletteForBackground[0]) ? paletteForBackground[0] : defaultBgColors[0];
                     const bodyLuminance = calculateLuminance(bodyPaletteColor1);
@@ -322,33 +412,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     let bodyTextColor;
                     // If body background color is in the "gray zone", use light text. Otherwise, choose based on luminance.
                     if (bodyLuminance > GRAY_ZONE_LOW && bodyLuminance < GRAY_ZONE_HIGH) {
-                        bodyTextColor = lightTextColor; 
+                        bodyTextColor = lightTextColor;
                     } else {
                         bodyTextColor = bodyLuminance > 0.5 ? darkTextColor : lightTextColor;
                     }
 
                     let timeTextColor;
                     // If progress bar color is in the "gray zone", use light text. Otherwise, choose based on luminance.
-                     if (progressLuminance > GRAY_ZONE_LOW && progressLuminance < GRAY_ZONE_HIGH) {
-                        timeTextColor = lightTextColor; 
+                    if (progressLuminance > GRAY_ZONE_LOW && progressLuminance < GRAY_ZONE_HIGH) {
+                        timeTextColor = lightTextColor;
                     } else {
                         timeTextColor = progressLuminance > 0.5 ? darkTextColor : lightTextColor;
                     }
 
-                    
+
                     // Apply determined text colors.
                     trackNameEl.style.color = bodyTextColor;
-                    artistNameEl.style.color = bodyTextColor; 
+                    artistNameEl.style.color = bodyTextColor;
                     genreInfoEl.style.color = bodyTextColor;
                     timeInfoEl.style.color = timeTextColor;
-                    
-                    if (playCountInfoEl) playCountInfoEl.style.color = bodyTextColor; 
 
-                    
+                    if (playCountInfoEl) playCountInfoEl.style.color = bodyTextColor;
+
+
                     likeIconEl.style.color = bodyTextColor;
                     shuffleIconEl.style.color = bodyTextColor;
-                    
-                    if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = bodyTextColor; 
+
+                    if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = bodyTextColor;
 
                 } catch (error) {
                     console.error('Error processing colors:', error);
@@ -358,11 +448,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     rootStyle.setProperty('--bg-palette-color-3', '#000000');
                     rootStyle.setProperty('--bg-palette-color-4', '#111111');
                     rootStyle.setProperty('--bg-palette-color-5', '#000000');
-                    
-                    if (playCountInfoEl) playCountInfoEl.style.color = '#ffffff'; 
+
+                    if (playCountInfoEl) playCountInfoEl.style.color = '#ffffff';
                     likeIconEl.style.color = '#ffffff';
                     shuffleIconEl.style.color = '#ffffff';
-                    if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = '#ffffff'; 
+                    if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = '#ffffff';
                 }
             }
         });
@@ -377,11 +467,11 @@ document.addEventListener('DOMContentLoaded', () => {
             rootStyle.setProperty('--bg-palette-color-3', '#000000');
             rootStyle.setProperty('--bg-palette-color-4', '#111111');
             rootStyle.setProperty('--bg-palette-color-5', '#000000');
-            
-            if (playCountInfoEl) playCountInfoEl.style.color = '#ffffff'; 
+
+            if (playCountInfoEl) playCountInfoEl.style.color = '#ffffff';
             likeIconEl.style.color = '#ffffff';
             shuffleIconEl.style.color = '#ffffff';
-            if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = '#ffffff'; 
+            if (lastfmIconContainerEl) lastfmIconContainerEl.style.color = '#ffffff';
         });
     }
 
@@ -421,25 +511,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (trackChanged) {
                     console.log("Track changed!");
                     currentTrackId = newTrackId;
-                    
+
                     const staggerDelay = FADE_STAGGER_MS;
                     const fadeOutDurationMs = parseFloat(FADE_DURATION) * 1000;
 
-                    
+
                     // Fade out artwork.
                     artworkImg.style.opacity = '0';
                     artworkImg.style.transform = 'scale(0.92)';
 
-                    
+
                     // Fade out track info and genre with a stagger.
                     setTimeout(() => {
                         trackInfoDiv.style.opacity = '0';
                         trackInfoDiv.style.transform = 'translateY(10px)';
                         genreInfoEl.style.opacity = '0';
                     }, staggerDelay);
-                    
-                    
-                    
+
+
+
                     // Update artwork source through proxy.
                     const originalUrl = data.artwork_url || '';
                     if (originalUrl) {
@@ -447,21 +537,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         artworkImg.removeAttribute('src'); // Remove src if no artwork URL.
                     }
-                    
+
                     artworkImg.alt = data.album ? `${data.album} Album Artwork` : 'Album Artwork';
                     trackNameEl.textContent = data.song;
                     artistNameEl.textContent = data.artist;
                     totalTimeEl.textContent = formatTime(data.duration_ms);
 
-                    
+
                     // Display genres if available.
                     if (data.genres && data.genres.length > 0) {
-                        genreInfoEl.textContent = data.genres.map(g => g.charAt(0).toUpperCase() + g.slice(1)).join(' / '); 
+                        genreInfoEl.textContent = data.genres.map(g => g.charAt(0).toUpperCase() + g.slice(1)).join(' / ');
                     } else {
-                        genreInfoEl.textContent = ''; 
+                        genreInfoEl.textContent = '';
                     }
-                    
-                    
+
+
                     // Handle Last.fm play count and first scrobble icon display.
                     let showLastfmCount = false;
                     let showFirstScrobble = false;
@@ -473,70 +563,70 @@ document.addEventListener('DOMContentLoaded', () => {
                             showLastfmCount = true;
                             playCountNumberEl.textContent = data.play_count;
                         }
-                    } 
-                    
+                    }
+
                     lastfmIconContainerEl.style.display = showLastfmCount ? 'inline-flex' : 'none';
-                    firstScrobbleIconEl.style.display = showFirstScrobble ? 'inline-block' : 'none'; 
-                    
+                    firstScrobbleIconEl.style.display = showFirstScrobble ? 'inline-block' : 'none';
+
                     // Prepare for fade-in.
-                    if(showLastfmCount) lastfmIconContainerEl.style.opacity = '0';
-                    if(showFirstScrobble) firstScrobbleIconEl.style.opacity = '0';
-                    
+                    if (showLastfmCount) lastfmIconContainerEl.style.opacity = '0';
+                    if (showFirstScrobble) firstScrobbleIconEl.style.opacity = '0';
+
                     if (!showLastfmCount) playCountNumberEl.textContent = ''; // Clear play count if not shown.
 
-                    
+
                     // Fade in new track information after old info has faded out.
                     setTimeout(() => {
-                        
+
                         artworkImg.style.opacity = '1';
                         artworkImg.style.transform = 'scale(1)';
-                        
+
                         // Fade in track info, genre, and Last.fm icons with a stagger.
                         setTimeout(() => {
-                             trackInfoDiv.style.opacity = '1';
-                             trackInfoDiv.style.transform = 'translateY(0)';
-                             genreInfoEl.style.opacity = '1';
-                             
-                             if (lastfmIconContainerEl.style.display !== 'none') {
-                                lastfmIconContainerEl.style.opacity = '1'; 
-                             }
-                             if (firstScrobbleIconEl.style.display !== 'none') {
-                                firstScrobbleIconEl.style.opacity = '1'; 
-                             }
+                            trackInfoDiv.style.opacity = '1';
+                            trackInfoDiv.style.transform = 'translateY(0)';
+                            genreInfoEl.style.opacity = '1';
+
+                            if (lastfmIconContainerEl.style.display !== 'none') {
+                                lastfmIconContainerEl.style.opacity = '1';
+                            }
+                            if (firstScrobbleIconEl.style.display !== 'none') {
+                                firstScrobbleIconEl.style.opacity = '1';
+                            }
                         }, staggerDelay);
                     }, fadeOutDurationMs);
                 }
 
-                
+
                 // Update like icon status.
                 const currentlyLiked = likeIconEl.classList.contains('active');
                 if (data.is_liked) {
                     if (!currentlyLiked) { // Animate if status changed.
                         animateIcon(likeIconEl);
                     }
-                    likeIconEl.className = 'playback-icon fa-solid fa-heart active'; 
+                    likeIconEl.className = 'playback-icon fa-solid fa-heart active';
                 } else {
                     if (currentlyLiked) { // Animate if status changed.
-                        animateIcon(likeIconEl); 
+                        animateIcon(likeIconEl);
                     }
-                    likeIconEl.className = 'playback-icon fa-regular fa-heart inactive'; 
+                    likeIconEl.className = 'playback-icon fa-regular fa-heart inactive';
                 }
 
-                
+
                 // Update shuffle icon status.
                 const currentlyShuffling = shuffleIconEl.classList.contains('active');
                 if (data.shuffle_state) {
                     if (!currentlyShuffling) { // Animate if status changed.
                         animateIcon(shuffleIconEl);
                     }
-                    shuffleIconEl.className = 'playback-icon fa-solid fa-shuffle active'; 
+                    shuffleIconEl.className = 'playback-icon fa-solid fa-shuffle active';
                 } else {
                     if (currentlyShuffling) { // Animate if status changed.
-                        animateIcon(shuffleIconEl); 
+                        animateIcon(shuffleIconEl);
                     }
-                    shuffleIconEl.className = 'playback-icon fa-solid fa-shuffle inactive'; 
+                    shuffleIconEl.className = 'playback-icon fa-solid fa-shuffle inactive';
                 }
-                
+
                 // Update last known track information.
                 lastUpdateInfo = {
                     progressMs: data.progress_ms,
@@ -554,13 +644,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else { // Handle case where nothing is playing.
                 if (lastUpdateInfo.isPlaying) { // If something was playing before, fade out the elements.
-                     const staggerDelay = FADE_STAGGER_MS;
-                     const fadeOutDurationMs = parseFloat(FADE_DURATION) * 1000;
+                    const staggerDelay = FADE_STAGGER_MS;
+                    const fadeOutDurationMs = parseFloat(FADE_DURATION) * 1000;
 
-                    
+
                     artworkImg.style.opacity = '0';
-                    artworkImg.style.transform = 'scale(0.95)'; 
-                    
+                    artworkImg.style.transform = 'scale(0.95)';
+
                     setTimeout(() => {
                         trackInfoDiv.style.opacity = '0';
                         trackInfoDiv.style.transform = 'translateY(5px)';
@@ -571,27 +661,27 @@ document.addEventListener('DOMContentLoaded', () => {
                         trackInfoDiv.style.display = 'none';
                         artworkImg.style.display = 'none';
                         notPlayingText.style.display = 'block';
-                        notPlayingText.style.opacity = '0'; 
+                        notPlayingText.style.opacity = '0';
                         // Double requestAnimationFrame to ensure opacity transition occurs.
                         requestAnimationFrame(() => {
-                            requestAnimationFrame(() => { 
+                            requestAnimationFrame(() => {
                                 notPlayingText.style.opacity = '1';
-                                
+
                             });
                         });
                     }, fadeOutDurationMs);
-                    
-                    
+
+
                     // Reset UI elements.
-                    genreInfoEl.textContent = ''; 
+                    genreInfoEl.textContent = '';
                     likeIconEl.className = 'playback-icon';
                     shuffleIconEl.className = 'playback-icon';
-                    
-                    if (playCountInfoEl) playCountInfoEl.style.display = 'none'; 
+
+                    if (playCountInfoEl) playCountInfoEl.style.display = 'none';
                     if (playCountNumberEl) playCountNumberEl.textContent = '';
-                    
-                    if (lastfmIconContainerEl) lastfmIconContainerEl.style.display = 'none'; 
-                    if (firstScrobbleIconEl) firstScrobbleIconEl.style.display = 'none'; 
+
+                    if (lastfmIconContainerEl) lastfmIconContainerEl.style.display = 'none';
+                    if (firstScrobbleIconEl) firstScrobbleIconEl.style.display = 'none';
                 }
                 currentTrackId = null; // Reset current track ID.
                 lastUpdateInfo.isPlaying = false;
@@ -608,21 +698,21 @@ document.addEventListener('DOMContentLoaded', () => {
             trackInfoDiv.style.display = 'none';
             artworkImg.style.display = 'none';
             notPlayingText.style.display = 'none';
-            
+
             // Reset UI elements.
-            genreInfoEl.textContent = ''; 
+            genreInfoEl.textContent = '';
             likeIconEl.className = 'playback-icon';
             shuffleIconEl.className = 'playback-icon';
-            
-            if (playCountInfoEl) playCountInfoEl.style.display = 'none'; 
+
+            if (playCountInfoEl) playCountInfoEl.style.display = 'none';
             if (playCountNumberEl) playCountNumberEl.textContent = '';
-            
-            if (lastfmIconContainerEl) lastfmIconContainerEl.style.display = 'none'; 
-            if (firstScrobbleIconEl) firstScrobbleIconEl.style.display = 'none'; 
+
+            if (lastfmIconContainerEl) lastfmIconContainerEl.style.display = 'none';
+            if (firstScrobbleIconEl) firstScrobbleIconEl.style.display = 'none';
         }
     }
 
-    
+
     // Initial fetch and set interval for periodic updates.
     fetchAndUpdate();
     setInterval(fetchAndUpdate, REFRESH_INTERVAL_MS);
