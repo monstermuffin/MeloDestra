@@ -335,45 +335,62 @@ document.addEventListener('DOMContentLoaded', () => {
                             return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
                         }
 
+                        let totalPopulation = 0;
+                        allSwatches.forEach(swatch => {
+                            totalPopulation += swatch.getPopulation();
+                        });
+
                         let trueAvgLuminance = 0;
                         let trueAvgSaturation = 0;
 
-                        allSwatches.forEach(swatch => {
-                            const [r, g, b] = swatch.getRgb();
-                            const [, s, l] = rgbToHsl(r, g, b);
-                            trueAvgLuminance += l;
-                            trueAvgSaturation += s;
-                        });
-
-                        if (allSwatches.length > 0) {
-                            trueAvgLuminance /= allSwatches.length;
-                            trueAvgSaturation /= allSwatches.length;
+                        if (totalPopulation > 0) {
+                            allSwatches.forEach(swatch => {
+                                const [r, g, b] = swatch.getRgb();
+                                const [, s, l] = rgbToHsl(r, g, b);
+                                const weight = swatch.getPopulation() / totalPopulation;
+                                trueAvgLuminance += l * weight;
+                                trueAvgSaturation += s * weight;
+                            });
                         }
+
+                        // Sort swatches by dominance to help pick meaningful fallback colors
+                        const populationSortedSwatches = [...allSwatches].sort((a, b) => b.getPopulation() - a.getPopulation());
 
                         // Select swatches for the gradient
                         let availableSwatches = [];
 
-                        // If the artwork is truly dark, exclude light swatches so it stays moody
-                        if (trueAvgLuminance < 40) {
+                        // If the artwork is truly dark, exclude light/vibrant swatches so it stays moody
+                        if (trueAvgLuminance < 35) {
                             availableSwatches = [
                                 palette.DarkMuted,
                                 palette.DarkVibrant,
-                                palette.Muted,
-                                palette.Vibrant
+                                populationSortedSwatches[0], // the most dominant color
+                                populationSortedSwatches[1]
                             ];
+
+                            // Only include Muted/Vibrant if they are very dominant (e.g. at least 5% of the image)
+                            if (palette.Muted && palette.Muted.getPopulation() > (totalPopulation * 0.05)) {
+                                availableSwatches.push(palette.Muted);
+                            }
+                            if (palette.Vibrant && palette.Vibrant.getPopulation() > (totalPopulation * 0.05)) {
+                                availableSwatches.push(palette.Vibrant);
+                            }
                         } else {
-                            // Normal or light artwork: include all swatches including bright ones
+                            // Normal or light artwork: include everything for a lush, rich gradient
                             availableSwatches = [
                                 palette.DarkMuted,
                                 palette.DarkVibrant,
                                 palette.Muted,
                                 palette.Vibrant,
                                 palette.LightMuted,
-                                palette.LightVibrant
+                                palette.LightVibrant,
+                                populationSortedSwatches[0] // Ensures the most dominant color is present
                             ];
                         }
 
                         availableSwatches = availableSwatches.filter(s => s !== null && s !== undefined);
+                        // Make unique swatches to avoid over-weighting
+                        availableSwatches = [...new Set(availableSwatches)];
 
                         let paletteForBackground = [];
 
@@ -387,8 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
 
                             // Dynamic lightness capping based on true image brightness
-                            // Very dark art gets capped at 45. Normal art is uncapped/capped at 85 to stay bright!
-                            const maxBgLightness = trueAvgLuminance < 40 ? 45 : 85;
+                            // Very dark art gets capped at 35 to prevent muddy light-browns. Normal art is uncapped/capped at 85 to stay bright!
+                            const maxBgLightness = trueAvgLuminance < 35 ? 35 : 85;
 
                             for (let i = 0; i < paletteForBackground.length; i++) {
                                 let [h, s, l] = rgbToHsl(paletteForBackground[i][0], paletteForBackground[i][1], paletteForBackground[i][2]);
