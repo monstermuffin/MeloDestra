@@ -3,7 +3,7 @@ console.log("MeloDestra loaded.");
 
 // Configuration constants, either from global APP_CONFIG or defaults.
 const CONFIG = window.APP_CONFIG || {};
-const REFRESH_INTERVAL_MS = CONFIG.refresh_interval_ms || 5000;
+const REFRESH_INTERVAL_MS = CONFIG.refresh_interval_ms || 500;
 const COLOR_THIEF_QUALITY = CONFIG.color_thief_quality || 1; // Lower is faster, higher is better quality. 1 = best, 10 = default.
 const GRAY_ZONE_LOW = CONFIG.gray_zone_low || 0.30; // Luminance threshold for determining if a color is in the "gray zone"
 const GRAY_ZONE_HIGH = CONFIG.gray_zone_high || 0.65; // Luminance threshold for determining if a color is in the "gray zone"

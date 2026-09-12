@@ -22,7 +22,7 @@ DEFAULT_CONFIG = {
     "SPOTIPY_CLIENT_SECRET": None,
     "LASTFM_API_KEY": None,
     "LASTFM_SHARED_SECRET": None,
-    "refresh_interval_ms": 5000,
+    "refresh_interval_ms": 500,
     "color_thief_quality": 1,
     "gray_zone_low": 0.30,
     "gray_zone_high": 0.70,
