@@ -323,7 +323,9 @@ def callback():
     
     try:
         # Get access token using the authorisation code and save it to cache
-        sp_oauth.get_access_token(code)
+        # check_cache=False: otherwise spotipy tries to refresh the stale cached token first and
+        # raises invalid_grant before it ever exchanges the new code
+        sp_oauth.get_access_token(code, as_dict=True, check_cache=False)
         print(f"Successfully obtained and cached access token - redirecting to app")
         
         return redirect(url_for('index', _external=True))
