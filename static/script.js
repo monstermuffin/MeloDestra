@@ -545,11 +545,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 lastUpdateInfo.isPlaying = false;
                 if (response.status === 401) { // Handle unauthorized access.
                     console.error("Unauthorized. Token might be expired or invalid.");
-                    loadingText.textContent = "Authentication needed. Please refresh.";
-                    loadingText.style.display = 'block';
-                    trackInfoDiv.style.display = 'none';
-                    artworkImg.style.display = 'none';
-                    notPlayingText.style.display = 'none';
+                    // '/' serves the Spotify setup page when there is no valid token
+                    window.location.href = '/';
+                    return;
                 }
                 return;
             }

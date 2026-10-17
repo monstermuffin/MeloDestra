@@ -286,14 +286,18 @@ last_known_artist_genres = []
 _last_logged_state = None
 
 def get_token():
-    token_info = sp_oauth.get_cached_token()
-    if not token_info:
-        
+    try:
+        token_info = sp_oauth.get_cached_token()
+        if not token_info:
+            return None
+
+        if sp_oauth.is_token_expired(token_info):
+            token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+        return token_info
+    except spotipy.exceptions.SpotifyOauthError as e:
+        # Refresh token revoked/invalid (invalid_grant): the user must re-authorise
+        print(f"Spotify token refresh failed, re-authentication required: {e}")
         return None
-    
-    if sp_oauth.is_token_expired(token_info):
-        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-    return token_info
 
 @app.route('/')
 def index():
@@ -448,8 +452,9 @@ def current_song():
 
     try:
         current_track = sp.current_playback()
-        if not (current_track and current_track['item']):
-             return jsonify({"is_playing": current_track.get('is_playing', False)}) 
+        if not (current_track and current_track.get('item')):
+            # Spotify returns 204/None when no device is active or nothing is playing
+            return jsonify({"is_playing": bool(current_track and current_track.get('is_playing', False))})
         if not current_track['is_playing']:
             artwork_cache["key"] = None
             artwork_cache["url"] = None
@@ -666,7 +671,7 @@ def toggle_like_current_song():
 
     try:
         current_track = sp.current_playback()
-        if not (current_track and current_track['item'] and current_track.get('is_playing')):
+        if not (current_track and current_track.get('item') and current_track.get('is_playing')):
             return jsonify({"error": "Nothing currently playing"}), 404
 
         track_id = current_track['item'].get('id')

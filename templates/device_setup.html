@@ -91,8 +91,9 @@
                 return;
             }
             
+            // Accept either the full callback URL or just the bare code
             const urlParams = new URLSearchParams(url.split('?')[1] || url.split('#')[1] || '');
-            const code = urlParams.get('code');
+            const code = urlParams.get('code') || (/^[\w-]{20,}$/.test(url) ? url : null);
             
             if (!code) {
                 alert('No authorization code found in the URL. Please make sure you copied the complete URL.');
